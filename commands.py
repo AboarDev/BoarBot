@@ -10,6 +10,7 @@ class Commands():
             'help': self.help,
             'send': self.send,
             'stop': self.stop,
+            'restart': self.restart,
             'dsend': self.dSend,
             'setstatus': self.status,
             'auth': self.authUser,
@@ -23,7 +24,7 @@ class Commands():
         if client.isAuthed(msg.author.id):
             channel = msg.channel
             deleted = await channel.purge(limit=int(txt))
-            await channel.send(F'Deleted {len(deleted)} messages')
+            await channel.send(F'```Deleted {len(deleted)} messages```')
         else:
             await msg.channel.send('Must be authed to use command')
 
@@ -53,7 +54,13 @@ class Commands():
     async def stop(self, client, msg, txt):
         if client.isAuthed(msg.author.id):
             await msg.channel.send('```:x: Bot has been stopped```')
-            await client.shutDown()
+            await client.close()
+
+    async def restart(self, client, msg, txt):
+        if client.isAuthed(msg.author.id):
+            await msg.channel.send('```:x: Bot has been restarted```')
+            client.restart = True
+            await client.close()
 
     async def dSend(self, client, msg, txt):
         split = str.split(txt)

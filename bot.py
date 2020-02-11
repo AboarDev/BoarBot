@@ -1,11 +1,8 @@
 import discord
 from commands import Commands
 import asyncio
-import datetime
-import time
 import json
 
-Token = open('F:/Pyth/BoarBot/token.txt').read()
 Configfile = 'F:/Pyth/BoarBot/config.json'
 
 
@@ -15,12 +12,10 @@ class BotClient(discord.Client):
         discord.Client.__init__(self)
         self.commands = Commands()
         self.config = json.loads(open(Configfile).read())
+        self.restart = False
 
     async def on_ready(self):
-        print('Logged in as')
-        print(self.user.name)
-        print(self.user.id)
-        print('------')
+        print(F'Logged in as\n{self.user.name}, {self.user.id}\n------')
         await self.change_presence(activity=discord.Game('Alive, once more!'))
 
     async def on_message(self, message):
@@ -41,16 +36,12 @@ class BotClient(discord.Client):
     async def setStatus(self, newStatus):
         await self.change_presence(activity=discord.Game(newStatus))
 
-    async def shutDown(self):
+    async def close(self):
         open(Configfile, 'w').write(json.dumps(self.config, indent=2))
-        await self.close()
+        await discord.Client.close(self)
 
     def isAuthed(self, user):
         if user in self.config['authedUsers']:
             return True
         else:
             return False
-
-
-client = BotClient()
-client.run(Token)
