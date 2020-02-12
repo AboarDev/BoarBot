@@ -16,7 +16,7 @@ class BotClient(discord.Client):
 
     async def on_ready(self):
         print(F'Logged in as\n{self.user.name}, {self.user.id}\n------')
-        await self.change_presence(activity=discord.Game('Alive, once more!'))
+        await self.change_presence(activity=discord.Game('+now Kek'))
 
     async def on_message(self, message):
         if message.author.id == 469303587357327360:

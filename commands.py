@@ -24,9 +24,9 @@ class Commands():
         if client.isAuthed(msg.author.id):
             channel = msg.channel
             deleted = await channel.purge(limit=int(txt))
-            await channel.send(F'```Deleted {len(deleted)} messages```')
+            await channel.send(F'```🗑 Deleted {len(deleted)} messages!```')
         else:
-            await msg.channel.send('Must be authed to use command')
+            await msg.channel.send('🔒 Must be authed to use command')
 
     async def deAuthUser(self, client, msg, txt):
         if client.isAuthed(msg.author.id):
@@ -53,12 +53,12 @@ class Commands():
 
     async def stop(self, client, msg, txt):
         if client.isAuthed(msg.author.id):
-            await msg.channel.send('```:x: Bot has been stopped```')
+            await msg.channel.send('```❌ Bot has been stopped```')
             await client.close()
 
     async def restart(self, client, msg, txt):
         if client.isAuthed(msg.author.id):
-            await msg.channel.send('```:x: Bot has been restarted```')
+            await msg.channel.send('```❌ Bot has been restarted```')
             client.restart = True
             await client.close()
 
