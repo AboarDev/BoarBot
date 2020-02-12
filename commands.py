@@ -32,10 +32,16 @@ class Commands():
         theLinks = client.config['savedLinks']
         if txt in theLinks:
             await msg.channel.send(f'Saved link: {txt} | {theLinks[txt]}')
+        else:
+            linklist = ''
+            for link in theLinks:
+                linklist += f"{link}: {theLinks[link]}\n"
+            print(len(linklist))
+            await msg.channel.send(f"```{linklist}```")
 
     async def massDelete(self, client, msg, txt):
-        await msg.delete()
         if client.isAuthed(msg.author.id):
+            await msg.delete()
             channel = msg.channel
             deleted = await channel.purge(limit=int(txt))
             await channel.send(F'```🗑 Deleted {len(deleted)} messages!```')
@@ -47,12 +53,16 @@ class Commands():
             target = msg.mentions[0]
             client.config['authedUsers'].remove(target.id)
             await msg.channel.send(f'`DeAuthed {target.name}#{target.discriminator}`')
+        else:
+            await msg.channel.send('🔒 Must be authed to use command')
 
     async def authUser(self, client, msg, txt):
         if client.isAuthed(msg.author.id):
             target = msg.mentions[0]
             client.config['authedUsers'].append(target.id)
             await msg.channel.send(f'`Authed {target.name}#{target.discriminator}`')
+        else:
+            await msg.channel.send('🔒 Must be authed to use command')
 
     async def listAuthedUsers(self, client, msg, txt):
         users = ''
@@ -64,41 +74,53 @@ class Commands():
     async def status(self, client, msg, txt):
         if client.isAuthed(msg.author.id):
             await client.setStatus(txt)
+        else:
+            await msg.channel.send('🔒 Must be authed to use command')
 
     async def stop(self, client, msg, txt):
         if client.isAuthed(msg.author.id):
             await msg.channel.send('```❌ Bot has been stopped```')
             await client.close()
+        else:
+            await msg.channel.send('🔒 Must be authed to use command')
 
     async def restart(self, client, msg, txt):
         if client.isAuthed(msg.author.id):
             await msg.channel.send('```❌ Bot has been restarted```')
             client.restart = True
             await client.close()
+        else:
+            await msg.channel.send('🔒 Must be authed to use command')
 
     async def dSend(self, client, msg, txt):
-        split = str.split(txt)
-        token = split[0]
-        time = split[1]
-        channel = await client.fetch_channel(token)
-        txt = txt.replace(f'{token} ','')
-        txt = txt.replace(f'{time} ','')
-        time = datetime.time.fromisoformat(time)
-        time = datetime.datetime.combine(datetime.date.today(),time)
-        difference = time - datetime.datetime.now()
-        print(difference)
-        await asyncio.sleep(difference.total_seconds())
-        await channel.send(txt)
-        await msg.channel.send(F'Sent message in <#{token}>')
+        if client.isAuthed(msg.author.id):
+            split = str.split(txt)
+            token = split[0]
+            time = split[1]
+            channel = await client.fetch_channel(token)
+            txt = txt.replace(f'{token} ','')
+            txt = txt.replace(f'{time} ','')
+            time = datetime.time.fromisoformat(time)
+            time = datetime.datetime.combine(datetime.date.today(),time)
+            difference = time - datetime.datetime.now()
+            print(difference)
+            await asyncio.sleep(difference.total_seconds())
+            await channel.send(txt)
+            await msg.channel.send(F'Sent message in <#{token}>')
+        else:
+            await msg.channel.send('🔒 Must be authed to use command')
 
     async def send(self, client, msg, txt):
-        print(txt)
-        token = str.split(txt)[0]
-        channel = await client.fetch_channel(token)
-        theContent = txt.replace(f'{token} ','')
-        theContent = await self.swapBrackets(theContent)
-        await channel.send(theContent)
-        await msg.channel.send(F'Sent message in <#{token}>')
+        if client.isAuthed(msg.author.id):
+            print(txt)
+            token = str.split(txt)[0]
+            channel = await client.fetch_channel(token)
+            theContent = txt.replace(f'{token} ','')
+            theContent = await self.swapBrackets(theContent)
+            await channel.send(theContent)
+            await msg.channel.send(F'Sent message in <#{token}>')
+        else:
+            await msg.channel.send('🔒 Must be authed to use command')
 
     async def now(self, client, msg, txt):
         await msg.channel.send(F'```{datetime.datetime.today()}```')
