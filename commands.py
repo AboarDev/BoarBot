@@ -13,12 +13,26 @@ class Commands():
             'restart': self.restart,
             'dsend': self.dSend,
             'setstatus': self.status,
-            'auth': self.authUser,
-            'deauth': self.deAuthUser,
-            'listauthed': self.listAuthedUsers,
-            'nuke': self.massDelete
+            'authuser': self.authUser,
+            'deauthuser': self.deAuthUser,
+            'listauthedusers': self.listAuthedUsers,
+            'massdelete': self.massDelete,
+            'savedlink': self.savedLink,
+            'savelink': self.saveLink
         }
     
+    async def saveLink(self, client, msg, txt):
+        txt = txt.split()
+        if 'http' in txt[1]:
+            theLinks = client.config['savedLinks']
+            theLinks[txt[0]] = txt[1]
+            await msg.channel.send("```Link Saved```")
+
+    async def savedLink(self, client, msg, txt):
+        theLinks = client.config['savedLinks']
+        if txt in theLinks:
+            await msg.channel.send(f'Saved link: {txt} | {theLinks[txt]}')
+
     async def massDelete(self, client, msg, txt):
         await msg.delete()
         if client.isAuthed(msg.author.id):
@@ -108,13 +122,19 @@ class Commands():
 
 +setstatus [status] > Sets bot status 🔒
 
-+savelink > saves link to name provided
++savelink [name] [link] > saves link to name provided
 
-+(de)auth > allow a user to use locked commands 🔒
++savedlink [name] > gets saved link
 
-+listauthed > Lists authed users
++(de)authuser > allow a user to use locked commands 🔒
+
++listauthedusers > Lists authed users
 
 +stop > stops the bot 🔒
+
++restart > restarts the bot 🔒
+
++massdelete [number of messages to delete] > deletes multiple messages 🔒
 
 +dm > dms a user, not to be abused 🔒
 

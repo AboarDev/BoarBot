@@ -16,10 +16,10 @@ class BotClient(discord.Client):
 
     async def on_ready(self):
         print(F'Logged in as\n{self.user.name}, {self.user.id}\n------')
-        await self.change_presence(activity=discord.Game('+now Kek'))
+        await self.change_presence(activity=discord.Game('+N(ow)Kek'))
 
     async def on_message(self, message):
-        if message.author.id == 469303587357327360:
+        if message.author.id == self.user.id:
             return
         if message.content[0:1] == '+':
             splitContent = str.split(message.content[1:])
