@@ -18,9 +18,10 @@ class Commands():
             'listauthedusers': self.listAuthedUsers,
             'massdelete': self.massDelete,
             'savedlink': self.savedLink,
-            'savelink': self.saveLink
+            'savelink': self.saveLink,
+            'savedlinks': self.savedLinks
         }
-    
+
     async def saveLink(self, client, msg, txt):
         txt = txt.split()
         if 'http' in txt[1]:
@@ -28,16 +29,29 @@ class Commands():
             theLinks[txt[0]] = txt[1]
             await msg.channel.send("```Link Saved```")
 
+    async def savedLinks(self, client, msg, txt):
+        theLinks = client.config['savedLinks']
+        count = 10
+        linklist = []
+        formattedLinks = ''
+        for link in theLinks:
+            formattedLink = f"{link}: {theLinks[link]}\n"
+            if count + len(formattedLink) > 2000:
+                linklist.append(formattedLinks)
+                count = 10
+                formattedLinks = ''
+            formattedLinks += formattedLink
+            count += len(formattedLink)
+        linklist.append(formattedLinks)
+        for link in linklist:
+            await msg.channel.send(f"```{link}```")
+
     async def savedLink(self, client, msg, txt):
         theLinks = client.config['savedLinks']
         if txt in theLinks:
             await msg.channel.send(f'Saved link: {txt} | {theLinks[txt]}')
         else:
-            linklist = ''
-            for link in theLinks:
-                linklist += f"{link}: {theLinks[link]}\n"
-            print(len(linklist))
-            await msg.channel.send(f"```{linklist}```")
+            await self.savedLinks(client, msg, txt)
 
     async def massDelete(self, client, msg, txt):
         if client.isAuthed(msg.author.id):
@@ -98,10 +112,10 @@ class Commands():
             token = split[0]
             time = split[1]
             channel = await client.fetch_channel(token)
-            txt = txt.replace(f'{token} ','')
-            txt = txt.replace(f'{time} ','')
+            txt = txt.replace(f'{token} ', '')
+            txt = txt.replace(f'{time} ', '')
             time = datetime.time.fromisoformat(time)
-            time = datetime.datetime.combine(datetime.date.today(),time)
+            time = datetime.datetime.combine(datetime.date.today(), time)
             difference = time - datetime.datetime.now()
             print(difference)
             await asyncio.sleep(difference.total_seconds())
@@ -115,7 +129,7 @@ class Commands():
             print(txt)
             token = str.split(txt)[0]
             channel = await client.fetch_channel(token)
-            theContent = txt.replace(f'{token} ','')
+            theContent = txt.replace(f'{token} ', '')
             theContent = await self.swapBrackets(theContent)
             await channel.send(theContent)
             await msg.channel.send(F'Sent message in <#{token}>')
@@ -126,8 +140,8 @@ class Commands():
         await msg.channel.send(F'```{datetime.datetime.today()}```')
 
     async def swapBrackets(self, text):
-        result = text.replace('[','<')
-        result = result.replace(']','>')
+        result = text.replace('[', '<')
+        result = result.replace(']', '>')
         return result
 
     async def help(self, client, msg, txt):
