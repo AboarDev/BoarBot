@@ -19,8 +19,21 @@ class Commands():
             'massdelete': self.massDelete,
             'savedlink': self.savedLink,
             'savelink': self.saveLink,
-            'savedlinks': self.savedLinks
+            'savedlinks': self.savedLinks,
+            'emojiinfo': self.emojiInfo
         }
+
+    async def emojiInfo(self, client, msg, txt):
+        toSend = ''
+        txt = txt.replace(' ','')
+        try:
+            emojiInt = int(txt)
+            print(client.get_emoji(emojiInt),'/',txt)
+            toSend = f'Type: Discord Emoji\nNative Format: `{client.get_emoji(int(txt))}`'
+        except ValueError:
+            print(txt)
+            toSend = f'Type: Unicode Emoji\nNative Format: `{txt}`'
+        await msg.channel.send(toSend)
 
     async def saveLink(self, client, msg, txt):
         txt = txt.split()
