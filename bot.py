@@ -27,11 +27,6 @@ class BotClient(discord.Client):
             if theCommand in self.commands.aliases:
                 asyncio.create_task(self.commands.aliases[theCommand](
                     self, message, message.content.replace(F"+{theCommand} ", '')))
-            # await message.delete()
-        elif message.content.endswith('?'):
-            print(message.content)
-            if self.config['k']:
-                await message.channel.send(f"> {message.content}\nK")
 
     async def setStatus(self, newStatus):
         await self.change_presence(activity=discord.Game(newStatus))

@@ -139,7 +139,6 @@ class Commands():
 
     async def send(self, client, msg, txt):
         if client.isAuthed(msg.author.id):
-            print(txt)
             token = str.split(txt)[0]
             channel = await client.fetch_channel(token)
             theContent = txt.replace(f'{token} ', '')
