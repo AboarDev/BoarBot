@@ -2,6 +2,7 @@ import discord
 from commands import Commands
 import asyncio
 import json
+import io
 
 Configfile = 'F:/Pyth/BoarBot/config.json'
 
@@ -40,3 +41,8 @@ class BotClient(discord.Client):
             return True
         else:
             return False
+
+    async def pushFile(self,channel,content):
+        theJson = json.dumps(content, indent=2)
+        theBin = io.BytesIO(theJson.encode('utf8'))
+        await channel.send(channel.name,file=discord.File(theBin,filename = f"{channel.name}.json"))

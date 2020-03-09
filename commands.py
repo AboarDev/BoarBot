@@ -1,7 +1,6 @@
 import datetime
 import asyncio
 
-
 class Commands():
 
     def __init__(self):
@@ -20,8 +19,24 @@ class Commands():
             'savedlink': self.savedLink,
             'savelink': self.saveLink,
             'savedlinks': self.savedLinks,
-            'emojiinfo': self.emojiInfo
+            'emojiinfo': self.emojiInfo,
+            'getjson': self.getJson
         }
+
+    async def getJson(self, client, msg, txt):
+        counter = 0
+        output = {}
+        theTime = datetime.datetime.today()
+        output['channelName'] = msg.channel.name
+        output['timeSaved'] = theTime.__str__()
+        output['exportUser'] = client.user.id
+        output['messages'] = {}
+        await msg.delete()
+        async for message in msg.channel.history():
+            if message.author.id != client.user.id:
+                output['messages'][message.id] = {'createdAt': message.created_at.__str__(), 'txt': message.content}
+                counter += 1
+        await client.pushFile(msg.channel,output)
 
     async def emojiInfo(self, client, msg, txt):
         toSend = ''
@@ -39,8 +54,9 @@ class Commands():
         txt = txt.split()
         if 'http' in txt[1]:
             theLinks = client.config['savedLinks']
-            theLinks[txt[0]] = txt[1]
-            await msg.channel.send("```Link Saved```")
+            if theLinks[txt[0]] == False:
+                theLinks[txt[0]] = txt[1]
+                await msg.channel.send("```Link Saved```")
 
     async def savedLinks(self, client, msg, txt):
         theLinks = client.config['savedLinks']
