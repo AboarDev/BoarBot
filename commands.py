@@ -30,12 +30,16 @@ class Commands():
         output['channelName'] = msg.channel.name
         output['timeSaved'] = theTime.__str__()
         output['exportUser'] = client.user.id
-        output['messages'] = {}
+        output['messages'] = []
         await msg.delete()
         async for message in msg.channel.history():
             if message.author.id != client.user.id:
-                output['messages'][message.id] = {'createdAt': message.created_at.__str__(), 'txt': message.content}
+                theAttachments = []
+                for attachment in message.attachments:
+                    theAttachments.append(attachment.url)
+                output['messages'].append({'id': message.id, 'attachments': theAttachments, 'createdAt': message.created_at.__str__(), 'txt': message.content})
                 counter += 1
+        output['messages'].reverse()
         await client.pushFile(msg.channel,output)
 
     async def emojiInfo(self, client, msg, txt):

@@ -17,7 +17,7 @@ class BotClient(discord.Client):
 
     async def on_ready(self):
         print(F'Logged in as\n{self.user.name}, {self.user.id}\n------')
-        await self.change_presence(activity=discord.Game('+N(ow)Kek'))
+        await self.change_presence(activity=discord.Game(self.config['status']))
 
     async def on_message(self, message):
         if message.author.id == self.user.id:
@@ -31,6 +31,7 @@ class BotClient(discord.Client):
 
     async def setStatus(self, newStatus):
         await self.change_presence(activity=discord.Game(newStatus))
+        self.config['status'] = newStatus
 
     async def close(self):
         open(Configfile, 'w').write(json.dumps(self.config, indent=2))
