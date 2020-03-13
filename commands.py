@@ -24,6 +24,7 @@ class Commands():
         }
 
     async def getJson(self, client, msg, txt):
+        fullTotal = 0
         counter = 0
         output = {}
         theTime = datetime.datetime.today()
@@ -31,15 +32,28 @@ class Commands():
         output['timeSaved'] = theTime.__str__()
         output['exportUser'] = client.user.id
         output['messages'] = []
+        theBefore = None
         await msg.delete()
-        async for message in msg.channel.history():
-            if message.author.id != client.user.id:
-                theAttachments = []
-                for attachment in message.attachments:
-                    theAttachments.append(attachment.url)
-                output['messages'].append({'id': message.id, 'attachments': theAttachments, 'createdAt': message.created_at.__str__(), 'txt': message.content})
+        iterate = True
+        while iterate:
+            async for message in msg.channel.history(before=theBefore, limit=100):
+                if message.author.id != client.user.id:
+                    theAttachments = []
+                    for attachment in message.attachments:
+                        theAttachments.append(attachment.url)
+                    output['messages'].append({'id': message.id, 'author':message.author, 'attachments': theAttachments, 'createdAt': message.created_at.__str__(), 'txt': message.content})
+                    fullTotal += 1
                 counter += 1
+                if counter == 100:
+                    theBefore = message
+            print(counter)
+            if counter == 100:
+                iterate = True
+                counter = 0
+            else:
+                iterate = False
         output['messages'].reverse()
+        print(fullTotal)
         await client.pushFile(msg.channel,output)
 
     async def emojiInfo(self, client, msg, txt):
