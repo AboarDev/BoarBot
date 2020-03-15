@@ -20,8 +20,12 @@ class Commands():
             'savelink': self.saveLink,
             'savedlinks': self.savedLinks,
             'emojiinfo': self.emojiInfo,
-            'getjson': self.getJson
+            'getjson': self.getJson,
+            'listmembers': self.listMembers
         }
+
+    async def listMembers(self, client, msg, txt):
+        pass
 
     async def getJson(self, client, msg, txt):
         fullTotal = 0
@@ -31,18 +35,20 @@ class Commands():
         output['channelName'] = msg.channel.name
         output['timeSaved'] = theTime.__str__()
         output['exportUser'] = client.user.id
+        output['members'] = {}
         output['messages'] = []
         theBefore = None
         await msg.delete()
         iterate = True
         while iterate:
             async for message in msg.channel.history(before=theBefore, limit=100):
-                if message.author.id != client.user.id:
-                    theAttachments = []
-                    for attachment in message.attachments:
-                        theAttachments.append(attachment.url)
-                    output['messages'].append({'id': message.id, 'author':message.author, 'attachments': theAttachments, 'createdAt': message.created_at.__str__(), 'txt': message.content})
-                    fullTotal += 1
+                if not message.author.id in output['members']:
+                    output['members'][message.author.id] = message.author.display_name
+                theAttachments = []
+                for attachment in message.attachments:
+                    theAttachments.append(attachment.url)
+                output['messages'].append({'id': str(message.id), 'author':str(message.author.id), 'attachments': theAttachments, 'createdAt': message.created_at.__str__(), 'txt': message.content})
+                fullTotal += 1
                 counter += 1
                 if counter == 100:
                     theBefore = message
