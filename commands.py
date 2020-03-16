@@ -30,13 +30,14 @@ class Commands():
     async def getJson(self, client, msg, txt):
         fullTotal = 0
         counter = 0
-        output = {}
         theTime = datetime.datetime.today()
-        output['channelName'] = msg.channel.name
-        output['timeSaved'] = theTime.__str__()
-        output['exportUser'] = client.user.id
-        output['members'] = {}
-        output['messages'] = []
+        output = {
+            'channelName': msg.channel.name,
+            'timeSaved': theTime.__str__(),
+            'exportUser': client.user.id,
+            'members': {},
+            'messages': []
+        }
         theBefore = None
         await msg.delete()
         iterate = True
@@ -61,7 +62,8 @@ class Commands():
         output['messages'].reverse()
         print(fullTotal)
         #await client.pushFile(msg.channel,output)
-        client.saveFile(output,f'{msg.channel.name}_{datetime.datetime.today()}')
+        theTime = theTime.isoformat().replace(':','_').replace('.','_').replace(' ','_')
+        client.saveFile(output,f'{msg.channel.name}_{theTime}')
 
     async def emojiInfo(self, client, msg, txt):
         toSend = ''
