@@ -25,9 +25,12 @@ class BotClient(discord.Client):
         if message.content[0:1] == '+':
             splitContent = str.split(message.content[1:])
             theCommand = splitContent[0]
-            if theCommand in self.commands.aliases:
-                asyncio.create_task(self.commands.aliases[theCommand](
-                    self, message, message.content.replace(F"+{theCommand} ", '')))
+            if theCommand in self.commands.theCommands:
+                aCommand = self.commands.theCommands[theCommand]
+                if aCommand['requiresAuth'] and self.isAuthed(message.author.id):
+                    asyncio.create_task(aCommand['method'](self, message, message.content.replace(F"+{theCommand} ", '')))
+                else:
+                    await message.channel.send('🔒 Must be authed to use command')
 
     async def setStatus(self, newStatus):
         await self.change_presence(activity=discord.Game(newStatus))
@@ -42,6 +45,10 @@ class BotClient(discord.Client):
             return True
         else:
             return False
+
+    def saveFile(self,content,filename):
+        theJson = json.dumps(content, indent=2)
+        open(F'F:/Pyth/BoarBot/scraped/{filename}.json','w').write(theJson)
 
     async def pushFile(self,channel,content):
         theJson = json.dumps(content, indent=2)

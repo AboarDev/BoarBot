@@ -4,24 +4,24 @@ import asyncio
 class Commands():
 
     def __init__(self):
-        self.aliases = {
-            'now': self.now,
-            'help': self.help,
-            'send': self.send,
-            'stop': self.stop,
-            'restart': self.restart,
-            'dsend': self.dSend,
-            'setstatus': self.status,
-            'authuser': self.authUser,
-            'deauthuser': self.deAuthUser,
-            'listauthedusers': self.listAuthedUsers,
-            'massdelete': self.massDelete,
-            'savedlink': self.savedLink,
-            'savelink': self.saveLink,
-            'savedlinks': self.savedLinks,
-            'emojiinfo': self.emojiInfo,
-            'getjson': self.getJson,
-            'listmembers': self.listMembers
+        self.theCommands = {
+            'now': {'method': self.now, 'requiresAuth': False},
+            'help': {'method': self.help, 'requiresAuth': False},
+            'send': {'method': self.send, 'requiresAuth': True},
+            'stop': {'method': self.stop, 'requiresAuth': True},
+            'restart': {'method': self.restart, 'requiresAuth': True},
+            'dsend': {'method': self.dSend, 'requiresAuth': True},
+            'setstatus': {'method': self.status, 'requiresAuth': True},
+            'authuser': {'method': self.authUser, 'requiresAuth': True},
+            'deauthuser': {'method': self.deAuthUser, 'requiresAuth': True},
+            'listauthedusers': {'method': self.listAuthedUsers, 'requiresAuth': False},
+            'massdelete': {'method': self.massDelete, 'requiresAuth': True},
+            'savedlink': {'method': self.savedLink, 'requiresAuth': False},
+            'savelink': {'method': self.saveLink, 'requiresAuth': False},
+            'savedlinks': {'method': self.savedLinks, 'requiresAuth': False},
+            'emojiinfo': {'method': self.emojiInfo, 'requiresAuth': False},
+            'getjson': {'method': self.getJson, 'requiresAuth': True},
+            'listmembers': {'method': self.listMembers, 'requiresAuth': False}
         }
 
     async def listMembers(self, client, msg, txt):
@@ -60,7 +60,8 @@ class Commands():
                 iterate = False
         output['messages'].reverse()
         print(fullTotal)
-        await client.pushFile(msg.channel,output)
+        #await client.pushFile(msg.channel,output)
+        client.saveFile(output,f'{msg.channel.name}_{datetime.datetime.today()}')
 
     async def emojiInfo(self, client, msg, txt):
         toSend = ''
