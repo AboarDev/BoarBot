@@ -4,3 +4,4 @@ token.txt
 users.json
 scraped
 config
+__pycache__

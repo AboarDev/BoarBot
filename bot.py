@@ -37,9 +37,11 @@ class BotClient(discord.Client):
             if theId in self.config['users']:
                 self.config['users'][theId]['exp'] += 10
                 print(self.config['users'][theId]['exp'])
+                self.config['users'][theId]['coins'] += 1
             else:
                 self.config['users'][theId] = {}
                 self.config['users'][theId]['exp'] = 10
+                self.config['users'][theId]['coins'] = 0
             
 
     async def setStatus(self, newStatus):
