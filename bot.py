@@ -31,6 +31,16 @@ class BotClient(discord.Client):
                     asyncio.create_task(aCommand['method'](self, message, message.content.replace(F"+{theCommand} ", '')))
                 else:
                     await message.channel.send('🔒 Must be authed to use command')
+        else:
+            print(message.author.id)
+            theId = str(message.author.id)
+            if theId in self.config['users']:
+                self.config['users'][theId]['exp'] += 10
+                print(self.config['users'][theId]['exp'])
+            else:
+                self.config['users'][theId] = {}
+                self.config['users'][theId]['exp'] = 10
+            
 
     async def setStatus(self, newStatus):
         await self.change_presence(activity=discord.Game(newStatus))
@@ -41,14 +51,11 @@ class BotClient(discord.Client):
         await discord.Client.close(self)
 
     def isAuthed(self, user):
-        if user in self.config['authedUsers']:
-            return True
-        else:
-            return False
+        return user in self.config['authedUsers']
 
-    def saveFile(self,content,filename):
+    def saveFile(self,content,filename,folder='scraped'):
         theJson = json.dumps(content, indent=2)
-        open(F'F:/Pyth/BoarBot/scraped/{filename}.json','w').write(theJson)
+        open(F'F:/Pyth/BoarBot/{folder}/{filename}.json','w').write(theJson)
 
     async def pushFile(self,channel,content):
         theJson = json.dumps(content, indent=2)

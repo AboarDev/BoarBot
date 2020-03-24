@@ -3,3 +3,4 @@ config - Copy.json
 token.txt
 users.json
 scraped
+config
