@@ -5,7 +5,7 @@ import json
 import io
 import userlevels
 
-Configfile = 'F:/Pyth/BoarBot/config.json'
+Configfile = 'config/config.json'
 
 
 class BotClient(discord.Client):
@@ -20,6 +20,7 @@ class BotClient(discord.Client):
     async def on_ready(self):
         print(F'Logged in as\n{self.user.name}, {self.user.id}\n------')
         await self.change_presence(activity=discord.Game(self.config['status']))
+        json.loads(open("scraped/❤Loved Friends❤_users.json").read())
 
     async def on_message(self, message):
         if message.author.id == self.user.id:
@@ -46,7 +47,8 @@ class BotClient(discord.Client):
         self.config['status'] = newStatus
 
     async def close(self):
-        open(Configfile, 'w').write(json.dumps(self.config, indent=2))
+        #open(Configfile, 'w').write(json.dumps(self.config, indent=2))
+        self.saveFile(self.config,"config","config")
         await discord.Client.close(self)
 
     def isAuthed(self, user):
@@ -54,7 +56,7 @@ class BotClient(discord.Client):
 
     def saveFile(self,content,filename,folder='scraped'):
         theJson = json.dumps(content, indent=2)
-        open(F'F:/Pyth/BoarBot/{folder}/{filename}.json','w').write(theJson)
+        open(F'{folder}/{filename}.json','w').write(theJson)
 
     async def pushFile(self,channel,content):
         theJson = json.dumps(content, indent=2)

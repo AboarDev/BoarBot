@@ -1,6 +1,7 @@
 import datetime
 import asyncio
 
+
 class Commands():
 
     def __init__(self):
@@ -29,7 +30,7 @@ class Commands():
         for member in msg.guild.members:
             if member.bot == False:
                 output.append(member.id)
-        client.saveFile(output,f'{msg.guild.name}_users')
+        client.saveFile(output, f'{msg.guild.name}_users')
 
     async def getJson(self, client, msg, txt):
         fullTotal = 0
@@ -52,7 +53,8 @@ class Commands():
                 theAttachments = []
                 for attachment in message.attachments:
                     theAttachments.append(attachment.url)
-                output['messages'].append({'id': str(message.id), 'author':str(message.author.id), 'attachments': theAttachments, 'createdAt': message.created_at.__str__(), 'txt': message.content})
+                output['messages'].append({'id': str(message.id), 'author': str(
+                    message.author.id), 'attachments': theAttachments, 'createdAt': message.created_at.__str__(), 'txt': message.content})
                 fullTotal += 1
                 counter += 1
                 if counter == 100:
@@ -66,17 +68,18 @@ class Commands():
         output['messages'].reverse()
         print(fullTotal)
         if txt.find("-send") >= 0:
-            await client.pushFile(msg.channel,output)
+            await client.pushFile(msg.channel, output)
         else:
-            theTime = theTime.isoformat().replace(':','_').replace('.','_').replace(' ','_')
-            client.saveFile(output,f'{msg.channel.name}_{theTime}')
+            theTime = theTime.isoformat().replace(
+                ':', '_').replace('.', '_').replace(' ', '_')
+            client.saveFile(output, f'{msg.channel.name}_{theTime}')
 
     async def emojiInfo(self, client, msg, txt):
         toSend = ''
-        txt = txt.replace(' ','')
+        txt = txt.replace(' ', '')
         try:
             emojiInt = int(txt)
-            print(client.get_emoji(emojiInt),'/',txt)
+            print(client.get_emoji(emojiInt), '/', txt)
             toSend = f'Type: Discord Emoji\nNative Format: `{client.get_emoji(int(txt))}`'
         except ValueError:
             print(txt)
@@ -206,35 +209,18 @@ class Commands():
         return result
 
     async def help(self, client, msg, txt):
-        await msg.channel.send("""```Help for bot functions:
-
-
-+help > This message
-
-+now > Time in python format
-
-+send [channel id] [message] > Sends message in channel with id provided
-
-+dsend [channel id] [time] [message] > Delayed version of +send
-
-+setstatus [status] > Sets bot status 🔒
-
-+savelink [name] [link] > saves link to name provided
-
-+savedlink [name] > gets saved link
-
-+(de)authuser > allow a user to use locked commands 🔒
-
-+listauthedusers > Lists authed users
-
-+stop > stops the bot 🔒
-
-+restart > restarts the bot 🔒
-
-+massdelete [number of messages to delete] > deletes multiple messages 🔒
-
-+getjson > [-send to send in chat] gets json of channel 🔒
-
-+dm > dms a user, not to be abused 🔒
-
+        await msg.channel.send("""```Help for bot functions:\n
++help > This message\n
++now > Time in python format\n
++send [channel id] [message] > Sends message in channel with id provided\n
++dsend [channel id] [time] [message] > Delayed version of +send\n
++setstatus [status] > Sets bot status 🔒\n
++savelink [name] [link] > saves link to name provided\n
++savedlink [name] > gets saved link\n
++(de)authuser > allow a user to use locked commands 🔒\n
++listauthedusers > Lists authed users\n
++stop > stops the bot 🔒\n
++restart > restarts the bot 🔒\n
++massdelete [number of messages to delete] > deletes multiple messages 🔒\n
++getjson > [-send to send in chat] gets json of channel 🔒\n
 ```""")
