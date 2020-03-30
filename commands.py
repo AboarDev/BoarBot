@@ -61,9 +61,11 @@ class Commands():
                 iterate = False
         output['messages'].reverse()
         print(fullTotal)
-        #await client.pushFile(msg.channel,output)
-        theTime = theTime.isoformat().replace(':','_').replace('.','_').replace(' ','_')
-        client.saveFile(output,f'{msg.channel.name}_{theTime}')
+        if txt.find("-send") >= 0:
+            await client.pushFile(msg.channel,output)
+        else:
+            theTime = theTime.isoformat().replace(':','_').replace('.','_').replace(' ','_')
+            client.saveFile(output,f'{msg.channel.name}_{theTime}')
 
     async def emojiInfo(self, client, msg, txt):
         toSend = ''
@@ -227,8 +229,8 @@ class Commands():
 
 +massdelete [number of messages to delete] > deletes multiple messages 🔒
 
-+dm > dms a user, not to be abused 🔒
++getjson > [-send to send in chat] gets json of channel 🔒
 
-Note: some commands may not be available yet
++dm > dms a user, not to be abused 🔒
 
 ```""")

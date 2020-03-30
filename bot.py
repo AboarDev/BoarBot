@@ -3,6 +3,7 @@ from commands import Commands
 import asyncio
 import json
 import io
+import userlevels
 
 Configfile = 'F:/Pyth/BoarBot/config.json'
 
@@ -11,6 +12,7 @@ class BotClient(discord.Client):
 
     def __init__(self):
         discord.Client.__init__(self)
+        self.theLevels = userlevels.UserLevels()
         self.commands = Commands()
         self.config = json.loads(open(Configfile).read())
         self.restart = False
@@ -34,14 +36,6 @@ class BotClient(discord.Client):
         else:
             print(message.author.id)
             theId = str(message.author.id)
-            if theId in self.config['users']:
-                self.config['users'][theId]['exp'] += 10
-                print(self.config['users'][theId]['exp'])
-                self.config['users'][theId]['coins'] += 1
-            else:
-                self.config['users'][theId] = {}
-                self.config['users'][theId]['exp'] = 10
-                self.config['users'][theId]['coins'] = 0
             
 
     async def setStatus(self, newStatus):
