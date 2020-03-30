@@ -1,4 +1,12 @@
 # BoarBot
 A boaring discord bot written in python
 
-Still in development so not a lot to see yet
+Features:
+Link saving
+
+Mass deleting (up to 100 messages)
+
+Channel scraping
+
+Leveling (in progress)
+

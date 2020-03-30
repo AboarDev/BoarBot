@@ -7,7 +7,9 @@ class UserLevels():
         return next((x for x in self.users if x.id == id), False)
 
     def addUser(self,id):
-        self.users.append(User(id,0,0,0))
+        theUser = User(id,0,0,0)
+        self.users.append(theUser)
+        return theUser
 
     def __str__(self):
         pass
@@ -22,6 +24,7 @@ class User():
         self.level = theLevel
         self.expRate = 1
         self.badges = []
+        self.guilds = []
 
     def onMessage(self, boost = 0):
         self.exp += 1
@@ -31,3 +34,6 @@ class User():
             return True
         else:
             return False
+
+    def __str__(self):
+        pass

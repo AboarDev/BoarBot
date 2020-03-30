@@ -21,11 +21,15 @@ class Commands():
             'savedlinks': {'method': self.savedLinks, 'requiresAuth': False},
             'emojiinfo': {'method': self.emojiInfo, 'requiresAuth': False},
             'getjson': {'method': self.getJson, 'requiresAuth': True},
-            'listmembers': {'method': self.listMembers, 'requiresAuth': False}
+            'listmembers': {'method': self.listMembers, 'requiresAuth': True}
         }
 
     async def listMembers(self, client, msg, txt):
-        pass
+        output = []
+        for member in msg.guild.members:
+            if member.bot == False:
+                output.append(member.id)
+        client.saveFile(output,f'{msg.guild.name}_users')
 
     async def getJson(self, client, msg, txt):
         fullTotal = 0

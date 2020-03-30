@@ -29,14 +29,17 @@ class BotClient(discord.Client):
             theCommand = splitContent[0]
             if theCommand in self.commands.theCommands:
                 aCommand = self.commands.theCommands[theCommand]
-                if aCommand['requiresAuth'] and self.isAuthed(message.author.id):
+                if (aCommand['requiresAuth'] and self.isAuthed(message.author.id)) or (aCommand['requiresAuth'] == False):
                     asyncio.create_task(aCommand['method'](self, message, message.content.replace(F"+{theCommand} ", '')))
                 else:
                     await message.channel.send('🔒 Must be authed to use command')
-        else:
+        elif message.guild in self.config['levelEnabled']:
             print(message.author.id)
             theId = str(message.author.id)
-            
+            aUser = self.theLevels.getUser(theId)
+            if not aUser:
+                aUser = self.theLevels.addUser(theId)
+            aUser.onMessage()
 
     async def setStatus(self, newStatus):
         await self.change_presence(activity=discord.Game(newStatus))
