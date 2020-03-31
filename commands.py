@@ -4,7 +4,7 @@ import asyncio
 
 class Commands():
 
-    def __init__(self):
+    def __init__(self, users):
         self.theCommands = {
             'now': {'method': self.now, 'requiresAuth': False},
             'help': {'method': self.help, 'requiresAuth': False},
@@ -22,8 +22,32 @@ class Commands():
             'savedlinks': {'method': self.savedLinks, 'requiresAuth': False},
             'emojiinfo': {'method': self.emojiInfo, 'requiresAuth': False},
             'getjson': {'method': self.getJson, 'requiresAuth': True},
-            'listmembers': {'method': self.listMembers, 'requiresAuth': True}
+            'listmembers': {'method': self.listMembers, 'requiresAuth': True},
+
+            'untilnextlevel': {'method': None, 'requiresAuth': False},
+            'about': {'method': None, 'requiresAuth': False},
+            'coins': {'method': None, 'requiresAuth': False},
+            'leaderboard': {'method': self.getLeaderBoard, 'requiresAuth': False}
         }
+        self.theUsers = users
+
+    async def getLeaderBoard(self, client, msg, txt):
+        async with msg.channel.typing():
+            output = ""
+            theMembers = msg.guild.members
+            theUsers = self.theUsers.outputUsers()
+            theUsers.sort(key=lambda r: r["level"])
+
+            for aUser in theUsers:
+                obj = None
+                for aMember in theMembers:
+                    if aMember.id == aUser["id"]:
+                        obj = aMember.display_name
+                if obj == None:
+                    obj = await client.fetch_user(aUser["id"])
+                    obj = obj.name
+                output += f'{obj} Level: {aUser["level"]} Exp: {aUser["exp"]}\n'
+            await msg.channel.send(f'```{output}```')
 
     async def listMembers(self, client, msg, txt):
         output = []

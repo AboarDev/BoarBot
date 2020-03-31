@@ -13,7 +13,7 @@ class BotClient(discord.Client):
     def __init__(self):
         discord.Client.__init__(self)
         self.theLevels = userlevels.UserLevels()
-        self.commands = Commands()
+        self.commands = Commands(self.theLevels)
         self.config = json.loads(open(Configfile).read())
         self.restart = False
         self.levelChannel = None
@@ -24,7 +24,7 @@ class BotClient(discord.Client):
         theUsers = json.loads(open("config/users.json").read())
         for user in theUsers:
             self.theLevels.users.append(userlevels.User(user["id"],user["exp"],user["coins"],user["level"]))
-        self.levelChannel = await self.fetch_channel(self.config['status'])
+        self.levelChannel = await self.fetch_channel(self.config['levelUpChannel'])
 
     async def on_message(self, message):
         if message.author.id == self.user.id:
@@ -39,12 +39,12 @@ class BotClient(discord.Client):
                 else:
                     await message.channel.send('🔒 Must be authed to use command')
         elif message.guild.id in self.config['levelEnabled']:
-            theId = str(message.author.id)
+            theId = message.author.id
             aUser = self.theLevels.getUser(theId)
             if not aUser:
                 aUser = self.theLevels.addUser(theId)
             if aUser.onMessage():
-                self.levelChannel.send(f'{message.author.display_name}#{message.author.discriminator} Leveled Up')
+                self.levelChannel.send(f'{message.author.display_name}#{message.author.discriminator} Leveled Up!')
 
     async def setStatus(self, newStatus):
         await self.change_presence(activity=discord.Game(newStatus))
