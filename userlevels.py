@@ -11,6 +11,12 @@ class UserLevels():
         self.users.append(theUser)
         return theUser
 
+    def outputUsers(self):
+        out = []
+        for aUser in self.users:
+            out.append(aUser.__dict__)
+        return out
+
     def __str__(self):
         pass
 

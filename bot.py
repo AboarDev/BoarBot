@@ -16,11 +16,15 @@ class BotClient(discord.Client):
         self.commands = Commands()
         self.config = json.loads(open(Configfile).read())
         self.restart = False
+        self.levelChannel = None
 
     async def on_ready(self):
         print(F'Logged in as\n{self.user.name}, {self.user.id}\n------')
         await self.change_presence(activity=discord.Game(self.config['status']))
-        json.loads(open("scraped/❤Loved Friends❤_users.json").read())
+        theUsers = json.loads(open("config/users.json").read())
+        for user in theUsers:
+            self.theLevels.users.append(userlevels.User(user["id"],user["exp"],user["coins"],user["level"]))
+        self.levelChannel = await self.fetch_channel(self.config['status'])
 
     async def on_message(self, message):
         if message.author.id == self.user.id:
@@ -34,13 +38,13 @@ class BotClient(discord.Client):
                     asyncio.create_task(aCommand['method'](self, message, message.content.replace(F"+{theCommand} ", '')))
                 else:
                     await message.channel.send('🔒 Must be authed to use command')
-        elif message.guild in self.config['levelEnabled']:
-            print(message.author.id)
+        elif message.guild.id in self.config['levelEnabled']:
             theId = str(message.author.id)
             aUser = self.theLevels.getUser(theId)
             if not aUser:
                 aUser = self.theLevels.addUser(theId)
-            aUser.onMessage()
+            if aUser.onMessage():
+                self.levelChannel.send(f'{message.author.display_name}#{message.author.discriminator} Leveled Up')
 
     async def setStatus(self, newStatus):
         await self.change_presence(activity=discord.Game(newStatus))
@@ -49,6 +53,7 @@ class BotClient(discord.Client):
     async def close(self):
         #open(Configfile, 'w').write(json.dumps(self.config, indent=2))
         self.saveFile(self.config,"config","config")
+        self.saveFile(self.theLevels.outputUsers(),"users","config")
         await discord.Client.close(self)
 
     def isAuthed(self, user):
