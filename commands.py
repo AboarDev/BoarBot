@@ -2,6 +2,7 @@ import datetime
 import asyncio
 import re
 
+
 class Commands():
 
     def __init__(self, users):
@@ -33,17 +34,26 @@ class Commands():
         self.theUsers = users
 
     async def gems(self, client, msg, txt):
-        async with msg.channel.typing():
-            split = txt.split(' ')
-            theEmoji = split[0]
-            theNumber = int(split[1])
-            if re.match(r'<:.*([0-9])>',theEmoji):
-                theEmoji = re.sub(r'[A-Za-z]+','_',theEmoji)
-                theLength = len(theEmoji)
-                while (theLength*theNumber) > 2000:
-                    theNumber -= 1
-                print(theNumber)
-                await msg.channel.send(f'{theEmoji*theNumber}')
+        split = txt.split(' ')
+        theEmoji = split[0]
+        NumberOfEmojis = 1
+        if len(split) > 1:
+            NumberOfEmojis = split[1]
+            NumberOfEmojis = NumberOfEmojis.lstrip()
+            NumberOfEmojis = int(NumberOfEmojis)
+        print(theEmoji)
+        if re.match(r'<:.*([0-9])>', theEmoji):
+            theEmoji = re.sub(r'[A-Za-z]+', '_', theEmoji)
+        theLength = len(theEmoji)
+        maxEmojis = 2000//theLength
+        print(maxEmojis)
+        while NumberOfEmojis > 0:
+            if NumberOfEmojis > maxEmojis:
+                toSend = maxEmojis
+            else:
+                toSend = NumberOfEmojis
+            await msg.channel.send(f'{theEmoji*toSend}')
+            NumberOfEmojis -= toSend
 
     async def getRank(self, client, msg, txt):
         async with msg.channel.typing():
@@ -124,10 +134,15 @@ class Commands():
     async def emojiInfo(self, client, msg, txt):
         toSend = ''
         txt = txt.replace(' ', '')
+        theId = re.search(r'[0-9]{18}',txt)
+        if theId:
+            txt = theId[0]
         try:
+            print(len(txt))
             emojiInt = int(txt)
-            print(client.get_emoji(emojiInt), '/', txt)
-            toSend = f'Type: Discord Emoji\nNative Format: `{client.get_emoji(int(txt))}`'
+            emoji = client.get_emoji(emojiInt)
+            print(emoji.id, '/', txt)
+            toSend = f'Type: Discord Emoji\nID: {emoji.id}\nName: {emoji.name}\n Usable by bot: {emoji.is_usable()}\n Url: {emoji.url}\n Roles: {emoji.roles}'
         except ValueError:
             print(txt)
             toSend = f'Type: Unicode Emoji\nNative Format: `{txt}`'
