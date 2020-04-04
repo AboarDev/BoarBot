@@ -1,6 +1,6 @@
 import datetime
 import asyncio
-
+import re
 
 class Commands():
 
@@ -23,21 +23,44 @@ class Commands():
             'emojiinfo': {'method': self.emojiInfo, 'requiresAuth': False},
             'getjson': {'method': self.getJson, 'requiresAuth': True},
             'listmembers': {'method': self.listMembers, 'requiresAuth': True},
+            'repeatemoji': {'method': self.gems, 'requiresAuth': False},
 
-            'untilnextlevel': {'method': None, 'requiresAuth': False},
+            'rank': {'method': self.getRank, 'requiresAuth': False},
             'about': {'method': None, 'requiresAuth': False},
             'coins': {'method': None, 'requiresAuth': False},
             'leaderboard': {'method': self.getLeaderBoard, 'requiresAuth': False}
         }
         self.theUsers = users
 
+    async def gems(self, client, msg, txt):
+        async with msg.channel.typing():
+            split = txt.split(' ')
+            theEmoji = split[0]
+            theNumber = int(split[1])
+            if re.match(r'<:.*([0-9])>',theEmoji):
+                theEmoji = re.sub(r'[A-Za-z]+','_',theEmoji)
+                theLength = len(theEmoji)
+                while (theLength*theNumber) > 2000:
+                    theNumber -= 1
+                print(theNumber)
+                await msg.channel.send(f'{theEmoji*theNumber}')
+
+    async def getRank(self, client, msg, txt):
+        async with msg.channel.typing():
+            theUsers = self.theUsers.outputUsers()
+            count = 0
+            for aUser in theUsers:
+                count += 1
+                if msg.author.id == aUser["id"] and ((aUser["exp"] != 0) or (aUser["level"] != 0)):
+                    break
+
+            await msg.channel.send(f'```{msg.author.name} Rank: {count} ```')
+
     async def getLeaderBoard(self, client, msg, txt):
         async with msg.channel.typing():
             output = ""
             theMembers = msg.guild.members
             theUsers = self.theUsers.outputUsers()
-            theUsers.sort(key=lambda r: r["level"])
-
             for aUser in theUsers:
                 obj = None
                 for aMember in theMembers:
@@ -219,6 +242,7 @@ class Commands():
             channel = await client.fetch_channel(token)
             theContent = txt.replace(f'{token} ', '')
             theContent = await self.swapBrackets(theContent)
+            print(theContent)
             await channel.send(theContent)
             await msg.channel.send(F'Sent message in <#{token}>')
         else:
@@ -247,4 +271,5 @@ class Commands():
 +restart > restarts the bot 🔒\n
 +massdelete [number of messages to delete] > deletes multiple messages 🔒\n
 +getjson > [-send to send in chat] gets json of channel 🔒\n
++repeatemoji > [emoji] [number of times]\n
 ```""")

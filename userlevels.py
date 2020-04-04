@@ -15,6 +15,8 @@ class UserLevels():
         out = []
         for aUser in self.users:
             out.append(aUser.__dict__)
+        out.sort(key=lambda r: r["exp"],reverse=True)
+        out.sort(key=lambda r: r["level"],reverse=True)
         return out
 
     def __str__(self):
