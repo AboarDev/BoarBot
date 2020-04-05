@@ -17,6 +17,7 @@ class BotClient(discord.Client):
         self.config = json.loads(open(Configfile).read())
         self.restart = False
         self.levelChannel = None
+        self.loadedLevels = False
 
     async def on_ready(self):
         print(F'Logged in as\n{self.user.name}, {self.user.id}\n------')
@@ -25,6 +26,7 @@ class BotClient(discord.Client):
         for user in theUsers:
             self.theLevels.users.append(userlevels.User(user["id"],user["exp"],user["coins"],user["level"]))
         self.levelChannel = await self.fetch_channel(self.config['levelUpChannel'])
+        self.loadedLevels = True
 
     async def on_message(self, message):
         if message.author.id == self.user.id:

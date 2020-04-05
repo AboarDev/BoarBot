@@ -41,9 +41,14 @@ class Commands():
             NumberOfEmojis = split[1]
             NumberOfEmojis = NumberOfEmojis.lstrip()
             NumberOfEmojis = int(NumberOfEmojis)
-        print(theEmoji)
         if re.match(r'<:.*([0-9])>', theEmoji):
             theEmoji = re.sub(r'[A-Za-z]+', '_', theEmoji)
+        elif re.match(r'[0-9]+', theEmoji):
+            theEmoji = client.get_emoji(int(theEmoji))
+            if theEmoji:
+                theEmoji = re.sub(r'[A-Za-z]+', '_', theEmoji.__str__())
+            else:
+                return
         theLength = len(theEmoji)
         maxEmojis = 2000//theLength
         print(maxEmojis)
@@ -141,8 +146,8 @@ class Commands():
             print(len(txt))
             emojiInt = int(txt)
             emoji = client.get_emoji(emojiInt)
-            print(emoji.id, '/', txt)
-            toSend = f'Type: Discord Emoji\nID: {emoji.id}\nName: {emoji.name}\n Usable by bot: {emoji.is_usable()}\n Url: {emoji.url}\n Roles: {emoji.roles}'
+            print(emoji, '/', txt)
+            toSend = f'Type: Discord Emoji\nID: {emoji.id}\nName: {emoji.name}\nUsable by bot: {emoji.is_usable()}\nUrl: {emoji.url}\nRoles: {emoji.roles}'
         except ValueError:
             print(txt)
             toSend = f'Type: Unicode Emoji\nNative Format: `{txt}`'
