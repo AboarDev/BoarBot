@@ -23,10 +23,12 @@ class BotClient(discord.Client):
         print(F'Logged in as\n{self.user.name}, {self.user.id}\n------')
         await self.change_presence(activity=discord.Game(self.config['status']))
         theUsers = json.loads(open("config/users.json").read())
-        for user in theUsers:
-            self.theLevels.users.append(userlevels.User(user["id"],user["exp"],user["coins"],user["level"]))
-        self.levelChannel = await self.fetch_channel(self.config['levelUpChannel'])
-        self.loadedLevels = True
+        if self.loadedLevels == False:
+            for user in theUsers:
+                if not self.theLevels.getUser(user["id"]):
+                    self.theLevels.users.append(userlevels.User(user["id"],user["exp"],user["coins"],user["level"]))
+            self.levelChannel = await self.fetch_channel(self.config['levelUpChannel'])
+            self.loadedLevels = True
 
     async def on_message(self, message):
         if message.author.id == self.user.id:
