@@ -37,6 +37,9 @@ class Commands():
         split = txt.split(' ')
         theEmoji = split[0]
         NumberOfEmojis = 1
+        if NumberOfEmojis > 3000:
+            await msg.channel.send("Limit of 3000 emojis")
+            return
         if len(split) > 1:
             NumberOfEmojis = split[1]
             NumberOfEmojis = NumberOfEmojis.lstrip()

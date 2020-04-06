@@ -36,9 +36,9 @@ class User():
 
     def onMessage(self, boost = 0):
         self.exp += 1
-        if self.level < 5 and self.exp == ((2**(self.level + 1))*100):
-            self.level+= 1
-            self.exp = 0
+        if self.level < 5 and self.exp >= (self.level + 1)*1000:
+            self.level += 1
+            self.exp = self.exp - (self.level*1000)
             return True
         else:
             return False

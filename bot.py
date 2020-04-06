@@ -48,7 +48,7 @@ class BotClient(discord.Client):
             if not aUser:
                 aUser = self.theLevels.addUser(theId)
             if aUser.onMessage():
-                self.levelChannel.send(f'{message.author.display_name}#{message.author.discriminator} Leveled Up!')
+                await self.levelChannel.send(f'`{message.author.display_name}#{message.author.discriminator}` Reached level {aUser.level}!')
 
     async def setStatus(self, newStatus):
         await self.change_presence(activity=discord.Game(newStatus))
