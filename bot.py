@@ -31,7 +31,7 @@ class BotClient(discord.Client):
             self.loadedLevels = True
 
     async def on_message(self, message):
-        if message.author.id == self.user.id:
+        if message.author.bot == True:
             return
         if message.content[0:1] == '+':
             splitContent = str.split(message.content[1:])

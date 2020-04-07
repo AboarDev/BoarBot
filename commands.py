@@ -9,6 +9,9 @@ class Commands():
         self.theCommands = {
             'now': {'method': self.now, 'requiresAuth': False},
             'help': {'method': self.help, 'requiresAuth': False},
+            'listauthedusers': {'method': self.listAuthedUsers, 'requiresAuth': False},
+            'getjson': {'method': self.getJson, 'requiresAuth': True},
+
             'send': {'method': self.send, 'requiresAuth': True},
             'stop': {'method': self.stop, 'requiresAuth': True},
             'restart': {'method': self.restart, 'requiresAuth': True},
@@ -16,19 +19,17 @@ class Commands():
             'setstatus': {'method': self.status, 'requiresAuth': True},
             'authuser': {'method': self.authUser, 'requiresAuth': True},
             'deauthuser': {'method': self.deAuthUser, 'requiresAuth': True},
-            'listauthedusers': {'method': self.listAuthedUsers, 'requiresAuth': False},
             'massdelete': {'method': self.massDelete, 'requiresAuth': True},
+
             'savedlink': {'method': self.savedLink, 'requiresAuth': False},
             'savelink': {'method': self.saveLink, 'requiresAuth': False},
             'savedlinks': {'method': self.savedLinks, 'requiresAuth': False},
             'emojiinfo': {'method': self.emojiInfo, 'requiresAuth': False},
-            'getjson': {'method': self.getJson, 'requiresAuth': True},
             'listmembers': {'method': self.listMembers, 'requiresAuth': True},
             'repeatemoji': {'method': self.gems, 'requiresAuth': False},
 
             'rank': {'method': self.getRank, 'requiresAuth': False},
-            'about': {'method': None, 'requiresAuth': False},
-            'coins': {'method': None, 'requiresAuth': False},
+            'about': {'method': self.about, 'requiresAuth': False},
             'leaderboard': {'method': self.getLeaderBoard, 'requiresAuth': False}
         }
         self.theUsers = users
@@ -71,8 +72,11 @@ class Commands():
                 count += 1
                 if msg.author.id == aUser["id"] and ((aUser["exp"] != 0) or (aUser["level"] != 0)):
                     break
+        await msg.channel.send(f'```{msg.author.name} Rank: {count} ```')
 
-            await msg.channel.send(f'```{msg.author.name} Rank: {count} ```')
+    async def about(self, client, msg, txt):
+        theUser = self.theUsers.getUser(msg.author.id)
+        await msg.channel.send(f'```{msg.author.name}\nLevel: {theUser["level"]}\nExp: {theUser["exp"]}\nCoins: {theUser["coins"]}```')
 
     async def getLeaderBoard(self, client, msg, txt):
         async with msg.channel.typing():
@@ -88,7 +92,7 @@ class Commands():
                     obj = await client.fetch_user(aUser["id"])
                     obj = obj.name
                 output += f'{obj} Level: {aUser["level"]} Exp: {aUser["exp"]}\n'
-            await msg.channel.send(f'```{output}```')
+        await msg.channel.send(f'```{output}```')
 
     async def listMembers(self, client, msg, txt):
         output = []
@@ -140,20 +144,21 @@ class Commands():
             client.saveFile(output, f'{msg.channel.name}_{theTime}')
 
     async def emojiInfo(self, client, msg, txt):
-        toSend = ''
-        txt = txt.replace(' ', '')
-        theId = re.search(r'[0-9]{18}',txt)
-        if theId:
-            txt = theId[0]
-        try:
-            print(len(txt))
-            emojiInt = int(txt)
-            emoji = client.get_emoji(emojiInt)
-            print(emoji, '/', txt)
-            toSend = f'Type: Discord Emoji\nID: {emoji.id}\nName: {emoji.name}\nUsable by bot: {emoji.is_usable()}\nUrl: {emoji.url}\nRoles: {emoji.roles}'
-        except ValueError:
-            print(txt)
-            toSend = f'Type: Unicode Emoji\nNative Format: `{txt}`'
+        async with msg.channel.typing():
+            toSend = ''
+            txt = txt.replace(' ', '')
+            theId = re.search(r'[0-9]{18}',txt)
+            if theId:
+                txt = theId[0]
+            try:
+                print(len(txt))
+                emojiInt = int(txt)
+                emoji = client.get_emoji(emojiInt)
+                print(emoji, '/', txt)
+                toSend = f'Type: Discord Emoji\nID: {emoji.id}\nName: {emoji.name}\nUsable by bot: {emoji.is_usable()}\nUrl: {emoji.url}\nRoles: {emoji.roles}'
+            except ValueError:
+                print(txt)
+                toSend = f'Type: Unicode Emoji\nNative Format: `{txt}`'
         await msg.channel.send(toSend)
 
     async def saveLink(self, client, msg, txt):
@@ -162,7 +167,7 @@ class Commands():
             theLinks = client.config['savedLinks']
             if theLinks[txt[0]] == False:
                 theLinks[txt[0]] = txt[1]
-                await msg.channel.send("```Link Saved```")
+                await msg.channel.send(f"Saved link: `{txt[0]}`")
 
     async def savedLinks(self, client, msg, txt):
         theLinks = client.config['savedLinks']
@@ -184,7 +189,7 @@ class Commands():
     async def savedLink(self, client, msg, txt):
         theLinks = client.config['savedLinks']
         if txt in theLinks:
-            await msg.channel.send(f'Saved link: {txt} | {theLinks[txt]}')
+            await msg.channel.send(f'Saved link: `{txt}` | {theLinks[txt]}')
         else:
             await self.savedLinks(client, msg, txt)
 

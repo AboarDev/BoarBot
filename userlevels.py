@@ -39,6 +39,7 @@ class User():
         if self.level < 5 and self.exp >= (self.level + 1)*1000:
             self.level += 1
             self.exp = self.exp - (self.level*1000)
+            self.coins += 10
             return True
         else:
             return False
