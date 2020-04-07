@@ -165,7 +165,7 @@ class Commands():
         txt = txt.split()
         if 'http' in txt[1]:
             theLinks = client.config['savedLinks']
-            if theLinks[txt[0]] == False:
+            if txt[0] not in theLinks:
                 theLinks[txt[0]] = txt[1]
                 await msg.channel.send(f"Saved link: `{txt[0]}`")
 
