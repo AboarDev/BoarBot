@@ -2,7 +2,7 @@ import asyncio
 import bot
 from importlib import reload
 
-Token = open('F:/Pyth/BoarBot/token.txt').read()
+Token = open('token.txt').read()
 def runBot():
   theClient = bot.BotClient()
   theClient.run(Token)
