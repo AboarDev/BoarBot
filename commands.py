@@ -76,7 +76,7 @@ class Commands():
 
     async def about(self, client, msg, txt):
         theUser = self.theUsers.getUser(msg.author.id)
-        await msg.channel.send(f'```{msg.author.name}\nLevel: {theUser["level"]}\nExp: {theUser["exp"]}\nCoins: {theUser["coins"]}```')
+        await msg.channel.send(f'```{msg.author.name}\nLevel: {theUser.level}\nExp: {theUser.exp}\nCoins: {theUser.coins}```')
 
     async def getLeaderBoard(self, client, msg, txt):
         async with msg.channel.typing():
