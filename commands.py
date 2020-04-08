@@ -83,15 +83,18 @@ class Commands():
             output = ""
             theMembers = msg.guild.members
             theUsers = self.theUsers.outputUsers()
+            theCount = 0
             for aUser in theUsers:
-                obj = None
+                theCount += 1
+                nameObj = None
                 for aMember in theMembers:
                     if aMember.id == aUser["id"]:
-                        obj = aMember.display_name
-                if obj == None:
-                    obj = await client.fetch_user(aUser["id"])
-                    obj = obj.name
-                output += f'{obj} Level: {aUser["level"]} Exp: {aUser["exp"]}\n'
+                        nameObj = aMember.display_name
+                if nameObj == None:
+                    nameObj = await client.fetch_user(aUser["id"])
+                    nameObj = nameObj.name
+                if aUser["level"] > 0 or aUser["exp"] > 0: 
+                    output += f'{theCount}. {nameObj} Level: {aUser["level"]} Exp: {aUser["exp"]}\n'
         await msg.channel.send(f'```{output}```')
 
     async def listMembers(self, client, msg, txt):

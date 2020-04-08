@@ -25,18 +25,18 @@ class UserLevels():
 
 class User():
 
-    def __init__(self, theId, theExp, theCoins, theLevel):
+    def __init__(self, theId, theExp, theCoins, theLevel, theExpRate = 1):
         self.id = theId
         self.exp = theExp
         self.coins = theCoins
         self.level = theLevel
-        self.expRate = 1
+        self.expRate = theExpRate
         self.badges = []
         self.guilds = []
 
     def onMessage(self, boost = 0):
-        self.exp += 1
-        if self.level < 5 and self.exp >= (self.level + 1)*1000:
+        self.exp += (1 * self.expRate) + boost
+        if self.exp >= (self.level + 1)*1000:
             self.level += 1
             self.exp = self.exp - (self.level*1000)
             self.coins += 10

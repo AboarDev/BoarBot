@@ -26,7 +26,7 @@ class BotClient(discord.Client):
         if self.loadedLevels == False:
             for user in theUsers:
                 if not self.theLevels.getUser(user["id"]):
-                    self.theLevels.users.append(userlevels.User(user["id"],user["exp"],user["coins"],user["level"]))
+                    self.theLevels.users.append(userlevels.User(user["id"],user["exp"],user["coins"],user["level"],user["expRate"]))
             self.levelChannel = await self.fetch_channel(self.config['levelUpChannel'])
             self.loadedLevels = True
 
@@ -55,10 +55,11 @@ class BotClient(discord.Client):
         self.config['status'] = newStatus
 
     async def close(self):
-        #open(Configfile, 'w').write(json.dumps(self.config, indent=2))
-        self.saveFile(self.config,"config","config")
-        self.saveFile(self.theLevels.outputUsers(),"users","config")
-        await discord.Client.close(self)
+        try:
+            self.saveFile(self.config,"config","config")
+            self.saveFile(self.theLevels.outputUsers(),"users","config")
+        finally:
+            await discord.Client.close(self)
 
     def isAuthed(self, user):
         return user in self.config['authedUsers']
