@@ -45,9 +45,9 @@ class BotClient(discord.Client):
         elif message.guild.id in self.config['levelEnabled']:
             theId = message.author.id
             aUser = self.theLevels.getUser(theId)
-            if not aUser:
+            if not aUser and message.author.bot == False:
                 aUser = self.theLevels.addUser(theId)
-            if aUser.onMessage():
+            if aUser and aUser.onMessage():
                 await self.levelChannel.send(f'`{message.author.display_name}#{message.author.discriminator}` Reached level {aUser.level}!')
 
     async def setStatus(self, newStatus):

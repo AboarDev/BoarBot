@@ -94,7 +94,7 @@ class Commands():
                     nameObj = await client.fetch_user(aUser["id"])
                     nameObj = nameObj.name
                 if aUser["level"] > 0 or aUser["exp"] > 0: 
-                    output += f'{theCount}. {nameObj} Level: {aUser["level"]} Exp: {aUser["exp"]}\n'
+                    output += f'{theCount:02}. {nameObj} - Level: {aUser["level"]} Exp: {aUser["exp"]}\n'
         await msg.channel.send(f'```{output}```')
 
     async def listMembers(self, client, msg, txt):
