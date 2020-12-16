@@ -32,7 +32,6 @@ class Commands():
             'about': {'method': self.about, 'requiresAuth': False},
             'leaderboard': {'method': self.getLeaderBoard, 'requiresAuth': False}
         }
-        #self.theUsers = users
         self.client.addCommands(self.theCommands)
 
     async def gems(self, msg, txt):
@@ -195,7 +194,7 @@ class Commands():
         if txt in theLinks:
             await msg.channel.send(f'Saved link: `{txt}` | {theLinks[txt]}')
         else:
-            await self.savedLinks(client, msg, txt)
+            await self.savedLinks(self.client, msg, txt)
 
     async def massDelete(self, msg, txt):
         await msg.delete()
@@ -221,16 +220,16 @@ class Commands():
         await msg.channel.send(users)
 
     async def status(self, msg, txt):
-        await client.setStatus(txt)
+        await self.client.setStatus(txt)
 
     async def stop(self, msg, txt):
         await msg.channel.send('```❌ Bot has been stopped```')
-        await client.close()
+        await self.client.close()
 
     async def restart(self, msg, txt):
         await msg.channel.send('```❌ Bot has been restarted```')
-        client.restart = True
-        await client.close()
+        self.client.restart = True
+        await self.client.close()
 
     async def dSend(self, msg, txt):
         split = str.split(txt)
@@ -249,7 +248,7 @@ class Commands():
 
     async def send(self, msg, txt):
         token = str.split(txt)[0]
-        channel = await client.fetch_channel(token)
+        channel = await self.client.fetch_channel(token)
         theContent = txt.replace(f'{token} ', '')
         theContent = await self.swapBrackets(theContent)
         print(theContent)

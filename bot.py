@@ -10,16 +10,18 @@ class BotClient(discord.Client):
 
     def __init__(self):
         discord.Client.__init__(self)
-        #self.theLevels = userlevels.UserLevels()
         self.config = json.loads(open(Configfile).read())
         self.restart = False
-        self.levelChannel = None
-        self.loadedLevels = False
         self.commands = {}
+        self.messageHandlers = []
+        self.loaders = []
+        self.closers = []
 
     async def on_ready(self):
         print(F'Logged in as\n{self.user.name}, {self.user.id}\n------')
         await self.change_presence(activity=discord.Game(self.config['status']))
+        for loader in self.loaders:
+            loader()
         """ theUsers = json.loads(open("config/users.json").read())
         if self.loadedLevels == False:
             for user in theUsers:
@@ -31,7 +33,7 @@ class BotClient(discord.Client):
     async def on_message(self, message):
         if message.author.bot == True:
             return
-        if message.content[0:1] == '+':
+        elif message.content[0:1] == '+':
             splitContent = str.split(message.content[1:])
             theCommand = splitContent[0]
             if theCommand in self.commands:
@@ -41,13 +43,9 @@ class BotClient(discord.Client):
                         message, message.content.replace(F"+{theCommand} ", '')))
                 else:
                     await message.channel.send('🔒 Must be authed to use command')
-        """ elif message.guild.id in self.config['levelEnabled']:
-            theId = message.author.id
-            aUser = self.theLevels.getUser(theId)
-            if not aUser and message.author.bot == False:
-                aUser = self.theLevels.addUser(theId)
-            if aUser and aUser.onMessage():
-                await self.levelChannel.send(f'`{message.author.display_name}#{message.author.discriminator}` Reached level {aUser.level}!') """
+        else:
+            for handler in self.messageHandlers:
+                handler(message)
 
     async def setStatus(self, newStatus):
         await self.change_presence(activity=discord.Game(newStatus))
@@ -74,3 +72,6 @@ class BotClient(discord.Client):
 
     def addCommands(self, commands):
         self.commands.update(commands)
+    
+    def addHandler(self,handler):
+        self.messageHandlers.append(handler)
