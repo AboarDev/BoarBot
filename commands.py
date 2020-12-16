@@ -5,12 +5,12 @@ import re
 
 class Commands():
 
-    def __init__(self, users):
+    def __init__(self, client):
+        self.client = client
         self.theCommands = {
             'now': {'method': self.now, 'requiresAuth': False},
             'help': {'method': self.help, 'requiresAuth': False},
             'listauthedusers': {'method': self.listAuthedUsers, 'requiresAuth': False},
-            'getjson': {'method': self.getJson, 'requiresAuth': True},
 
             'send': {'method': self.send, 'requiresAuth': True},
             'stop': {'method': self.stop, 'requiresAuth': True},
@@ -32,9 +32,10 @@ class Commands():
             'about': {'method': self.about, 'requiresAuth': False},
             'leaderboard': {'method': self.getLeaderBoard, 'requiresAuth': False}
         }
-        self.theUsers = users
+        #self.theUsers = users
+        self.client.addCommands(self.theCommands)
 
-    async def gems(self, client, msg, txt):
+    async def gems(self, msg, txt):
         split = txt.split(' ')
         theEmoji = split[0]
         NumberOfEmojis = 1
@@ -48,7 +49,7 @@ class Commands():
         if re.match(r'<:.*([0-9])>', theEmoji):
             theEmoji = re.sub(r'[A-Za-z]+', '_', theEmoji)
         elif re.match(r'[0-9]+', theEmoji):
-            theEmoji = client.get_emoji(int(theEmoji))
+            theEmoji = self.client.get_emoji(int(theEmoji))
             if theEmoji:
                 theEmoji = re.sub(r'[A-Za-z]+', '_', theEmoji.__str__())
             else:
@@ -64,7 +65,7 @@ class Commands():
             await msg.channel.send(f'{theEmoji*toSend}')
             NumberOfEmojis -= toSend
 
-    async def getRank(self, client, msg, txt):
+    async def getRank(self, msg, txt):
         async with msg.channel.typing():
             theUsers = self.theUsers.outputUsers()
             count = 0
@@ -74,11 +75,11 @@ class Commands():
                     break
         await msg.channel.send(f'```{msg.author.name} Rank: {count} ```')
 
-    async def about(self, client, msg, txt):
+    async def about(self, msg, txt):
         theUser = self.theUsers.getUser(msg.author.id)
         await msg.channel.send(f'```{msg.author.name}\nLevel: {theUser.level}\nExp: {theUser.exp}\nCoins: {theUser.coins}```')
 
-    async def getLeaderBoard(self, client, msg, txt):
+    async def getLeaderBoard(self, msg, txt):
         async with msg.channel.typing():
             output = ""
             theMembers = msg.guild.members
@@ -91,27 +92,27 @@ class Commands():
                     if aMember.id == aUser["id"]:
                         nameObj = aMember.display_name
                 if nameObj == None:
-                    nameObj = await client.fetch_user(aUser["id"])
+                    nameObj = await self.client.fetch_user(aUser["id"])
                     nameObj = nameObj.name
-                if aUser["level"] > 0 or aUser["exp"] > 0: 
+                if aUser["level"] > 0 or aUser["exp"] > 0:
                     output += f'{theCount:02}. {nameObj} - Level: {aUser["level"]} Exp: {aUser["exp"]}\n'
         await msg.channel.send(f'```{output}```')
 
-    async def listMembers(self, client, msg, txt):
+    async def listMembers(self, msg, txt):
         output = []
         for member in msg.guild.members:
             if member.bot == False:
                 output.append(member.id)
-        client.saveFile(output, f'{msg.guild.name}_users')
+        self.client.saveFile(output, f'{msg.guild.name}_users')
 
-    async def getJson(self, client, msg, txt):
+    async def getJson(self, msg, txt):
         fullTotal = 0
         counter = 0
         theTime = datetime.datetime.today()
         output = {
             'channelName': msg.channel.name,
             'timeSaved': theTime.__str__(),
-            'exportUser': client.user.id,
+            'exportUser': self.client.user.id,
             'members': {},
             'messages': []
         }
@@ -140,23 +141,23 @@ class Commands():
         output['messages'].reverse()
         print(fullTotal)
         if txt.find("-send") >= 0:
-            await client.pushFile(msg.channel, output)
+            await self.client.pushFile(msg.channel, output)
         else:
             theTime = theTime.isoformat().replace(
                 ':', '_').replace('.', '_').replace(' ', '_')
-            client.saveFile(output, f'{msg.channel.name}_{theTime}')
+            self.client.saveFile(output, f'{msg.channel.name}_{theTime}')
 
-    async def emojiInfo(self, client, msg, txt):
+    async def emojiInfo(self, msg, txt):
         async with msg.channel.typing():
             toSend = ''
             txt = txt.replace(' ', '')
-            theId = re.search(r'[0-9]{18}',txt)
+            theId = re.search(r'[0-9]{18}', txt)
             if theId:
                 txt = theId[0]
             try:
                 print(len(txt))
                 emojiInt = int(txt)
-                emoji = client.get_emoji(emojiInt)
+                emoji = self.client.get_emoji(emojiInt)
                 print(emoji, '/', txt)
                 toSend = f'Type: Discord Emoji\nID: {emoji.id}\nName: {emoji.name}\nUsable by bot: {emoji.is_usable()}\nUrl: {emoji.url}\nRoles: {emoji.roles}'
             except ValueError:
@@ -164,16 +165,16 @@ class Commands():
                 toSend = f'Type: Unicode Emoji\nNative Format: `{txt}`'
         await msg.channel.send(toSend)
 
-    async def saveLink(self, client, msg, txt):
+    async def saveLink(self, msg, txt):
         txt = txt.split()
         if 'http' in txt[1]:
-            theLinks = client.config['savedLinks']
+            theLinks = self.client.config['savedLinks']
             if txt[0] not in theLinks:
                 theLinks[txt[0]] = txt[1]
                 await msg.channel.send(f"Saved link: `{txt[0]}`")
 
-    async def savedLinks(self, client, msg, txt):
-        theLinks = client.config['savedLinks']
+    async def savedLinks(self, msg, txt):
+        theLinks = self.client.config['savedLinks']
         count = 10
         linklist = []
         formattedLinks = ''
@@ -189,97 +190,73 @@ class Commands():
         for link in linklist:
             await msg.channel.send(f"```{link}```")
 
-    async def savedLink(self, client, msg, txt):
-        theLinks = client.config['savedLinks']
+    async def savedLink(self, msg, txt):
+        theLinks = self.client.config['savedLinks']
         if txt in theLinks:
             await msg.channel.send(f'Saved link: `{txt}` | {theLinks[txt]}')
         else:
             await self.savedLinks(client, msg, txt)
 
-    async def massDelete(self, client, msg, txt):
-        if client.isAuthed(msg.author.id):
-            await msg.delete()
-            channel = msg.channel
-            deleted = await channel.purge(limit=int(txt))
-            await channel.send(F'```🗑 Deleted {len(deleted)} messages!```')
-        else:
-            await msg.channel.send('🔒 Must be authed to use command')
+    async def massDelete(self, msg, txt):
+        await msg.delete()
+        channel = msg.channel
+        deleted = await channel.purge(limit=int(txt))
+        await channel.send(F'```🗑 Deleted {len(deleted)} messages!```')
 
-    async def deAuthUser(self, client, msg, txt):
-        if client.isAuthed(msg.author.id):
-            target = msg.mentions[0]
-            client.config['authedUsers'].remove(target.id)
-            await msg.channel.send(f'`DeAuthed {target.name}#{target.discriminator}`')
-        else:
-            await msg.channel.send('🔒 Must be authed to use command')
+    async def deAuthUser(self, msg, txt):
+        target = msg.mentions[0]
+        self.client.config['authedUsers'].remove(target.id)
+        await msg.channel.send(f'`DeAuthed {target.name}#{target.discriminator}`')
 
-    async def authUser(self, client, msg, txt):
-        if client.isAuthed(msg.author.id):
-            target = msg.mentions[0]
-            client.config['authedUsers'].append(target.id)
-            await msg.channel.send(f'`Authed {target.name}#{target.discriminator}`')
-        else:
-            await msg.channel.send('🔒 Must be authed to use command')
+    async def authUser(self, msg, txt):
+        target = msg.mentions[0]
+        self.client.config['authedUsers'].append(target.id)
+        await msg.channel.send(f'`Authed {target.name}#{target.discriminator}`')
 
-    async def listAuthedUsers(self, client, msg, txt):
+    async def listAuthedUsers(self, msg, txt):
         users = ''
-        for user in client.config['authedUsers']:
-            theUser = await client.fetch_user(user)
+        for user in self.client.config['authedUsers']:
+            theUser = await self.client.fetch_user(user)
             users += f"`{theUser.name}#{str(theUser.discriminator)}` "
         await msg.channel.send(users)
 
-    async def status(self, client, msg, txt):
-        if client.isAuthed(msg.author.id):
-            await client.setStatus(txt)
-        else:
-            await msg.channel.send('🔒 Must be authed to use command')
+    async def status(self, msg, txt):
+        await client.setStatus(txt)
 
-    async def stop(self, client, msg, txt):
-        if client.isAuthed(msg.author.id):
-            await msg.channel.send('```❌ Bot has been stopped```')
-            await client.close()
-        else:
-            await msg.channel.send('🔒 Must be authed to use command')
+    async def stop(self, msg, txt):
+        await msg.channel.send('```❌ Bot has been stopped```')
+        await client.close()
 
-    async def restart(self, client, msg, txt):
-        if client.isAuthed(msg.author.id):
-            await msg.channel.send('```❌ Bot has been restarted```')
-            client.restart = True
-            await client.close()
-        else:
-            await msg.channel.send('🔒 Must be authed to use command')
+    async def restart(self, msg, txt):
+        await msg.channel.send('```❌ Bot has been restarted```')
+        client.restart = True
+        await client.close()
 
-    async def dSend(self, client, msg, txt):
-        if client.isAuthed(msg.author.id):
-            split = str.split(txt)
-            token = split[0]
-            time = split[1]
-            channel = await client.fetch_channel(token)
-            txt = txt.replace(f'{token} ', '')
-            txt = txt.replace(f'{time} ', '')
-            time = datetime.time.fromisoformat(time)
-            time = datetime.datetime.combine(datetime.date.today(), time)
-            difference = time - datetime.datetime.now()
-            print(difference)
-            await asyncio.sleep(difference.total_seconds())
-            await channel.send(txt)
-            await msg.channel.send(F'Sent message in <#{token}>')
-        else:
-            await msg.channel.send('🔒 Must be authed to use command')
+    async def dSend(self, msg, txt):
+        split = str.split(txt)
+        token = split[0]
+        time = split[1]
+        channel = await self.client.fetch_channel(token)
+        txt = txt.replace(f'{token} ', '')
+        txt = txt.replace(f'{time} ', '')
+        time = datetime.time.fromisoformat(time)
+        time = datetime.datetime.combine(datetime.date.today(), time)
+        difference = time - datetime.datetime.now()
+        print(difference)
+        await asyncio.sleep(difference.total_seconds())
+        await channel.send(txt)
+        await msg.channel.send(F'Sent message in <#{token}>')
 
-    async def send(self, client, msg, txt):
-        if client.isAuthed(msg.author.id):
-            token = str.split(txt)[0]
-            channel = await client.fetch_channel(token)
-            theContent = txt.replace(f'{token} ', '')
-            theContent = await self.swapBrackets(theContent)
-            print(theContent)
-            await channel.send(theContent)
-            await msg.channel.send(F'Sent message in <#{token}>')
-        else:
-            await msg.channel.send('🔒 Must be authed to use command')
+    async def send(self, msg, txt):
+        token = str.split(txt)[0]
+        channel = await client.fetch_channel(token)
+        theContent = txt.replace(f'{token} ', '')
+        theContent = await self.swapBrackets(theContent)
+        print(theContent)
+        await channel.send(theContent)
+        await msg.channel.send(F'Sent message in <#{token}>')
 
-    async def now(self, client, msg, txt):
+    async def now(self, msg, txt):
         await msg.channel.send(F'```{datetime.datetime.today()}```')
 
     async def swapBrackets(self, text):
@@ -287,7 +264,7 @@ class Commands():
         result = result.replace(']', '>')
         return result
 
-    async def help(self, client, msg, txt):
+    async def help(self, msg, txt):
         await msg.channel.send("""```Help for bot functions:\n
 +help > This message\n
 +now > Time in python format\n
