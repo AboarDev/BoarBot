@@ -22,12 +22,7 @@ class BotClient(discord.Client):
         await self.change_presence(activity=discord.Game(self.config['status']))
         for loader in self.loaders:
             loader()
-        """ theUsers = json.loads(open("config/users.json").read())
-        if self.loadedLevels == False:
-            for user in theUsers:
-                if not self.theLevels.getUser(user["id"]):
-                    self.theLevels.users.append(userlevels.User(user["id"],user["exp"],user["coins"],user["level"],user["expRate"]))
-            self.levelChannel = await self.fetch_channel(self.config['levelUpChannel'])
+        """ self.levelChannel = await self.fetch_channel(self.config['levelUpChannel'])
             self.loadedLevels = True """
 
     async def on_message(self, message):
@@ -51,6 +46,9 @@ class BotClient(discord.Client):
         await self.change_presence(activity=discord.Game(newStatus))
         self.config['status'] = newStatus
 
+    async def saveConfig (self):
+        self.saveFile(self.config, "config", "config")
+
     async def close(self):
         try:
             self.saveFile(self.config, "config", "config")
@@ -73,5 +71,8 @@ class BotClient(discord.Client):
     def addCommands(self, commands):
         self.commands.update(commands)
     
+    def addLoader(self, loader):
+        self.loaders.append(loader)
+
     def addHandler(self,handler):
         self.messageHandlers.append(handler)

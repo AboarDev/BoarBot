@@ -11,6 +11,7 @@ class UserLevels():
         }
         self.client.addCommands(self.theCommands)
         self.client.addHandler(self.on_message)
+        self.client.addLoader(self.on_ready)
         theUsers = json.loads(open("config/users.json").read())
         for user in theUsers:
             self.users.append(User(user["id"],user["exp"],user["coins"],user["level"],user["expRate"]))
@@ -24,8 +25,7 @@ class UserLevels():
         if not aUser and msg.author.bot == False:
             aUser = self.addUser(theId)
         if aUser and aUser.onMessage():
-            #await self.levelChannel.send(f'`{message.author.display_name}#{message.author.discriminator}` Reached level {aUser.level}!')
-            pass
+            message = f'`{message.author.display_name}#{message.author.discriminator}` Reached level {aUser.level}!'
 
     def getUser(self, id):
         return next((x for x in self.users if x.id == id), False)

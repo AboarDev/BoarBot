@@ -20,10 +20,7 @@ class Commands():
             'authuser': {'method': self.authUser, 'requiresAuth': True},
             'deauthuser': {'method': self.deAuthUser, 'requiresAuth': True},
             'massdelete': {'method': self.massDelete, 'requiresAuth': True},
-
-            'savedlink': {'method': self.savedLink, 'requiresAuth': False},
-            'savelink': {'method': self.saveLink, 'requiresAuth': False},
-            'savedlinks': {'method': self.savedLinks, 'requiresAuth': False},
+            
             'emojiinfo': {'method': self.emojiInfo, 'requiresAuth': False},
             'listmembers': {'method': self.listMembers, 'requiresAuth': True},
             'repeatemoji': {'method': self.gems, 'requiresAuth': False},
@@ -164,37 +161,6 @@ class Commands():
                 toSend = f'Type: Unicode Emoji\nNative Format: `{txt}`'
         await msg.channel.send(toSend)
 
-    async def saveLink(self, msg, txt):
-        txt = txt.split()
-        if 'http' in txt[1]:
-            theLinks = self.client.config['savedLinks']
-            if txt[0] not in theLinks:
-                theLinks[txt[0]] = txt[1]
-                await msg.channel.send(f"Saved link: `{txt[0]}`")
-
-    async def savedLinks(self, msg, txt):
-        theLinks = self.client.config['savedLinks']
-        count = 10
-        linklist = []
-        formattedLinks = ''
-        for link in theLinks:
-            formattedLink = f"{link}: {theLinks[link]}\n"
-            if count + len(formattedLink) > 2000:
-                linklist.append(formattedLinks)
-                count = 10
-                formattedLinks = ''
-            formattedLinks += formattedLink
-            count += len(formattedLink)
-        linklist.append(formattedLinks)
-        for link in linklist:
-            await msg.channel.send(f"```{link}```")
-
-    async def savedLink(self, msg, txt):
-        theLinks = self.client.config['savedLinks']
-        if txt in theLinks:
-            await msg.channel.send(f'Saved link: `{txt}` | {theLinks[txt]}')
-        else:
-            await self.savedLinks(self.client, msg, txt)
 
     async def massDelete(self, msg, txt):
         await msg.delete()

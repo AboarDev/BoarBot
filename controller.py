@@ -3,6 +3,7 @@ import bot
 from scrape import Scrape
 from userlevels import UserLevels
 from commands import Commands
+from savelinks import SaveLinks
 from importlib import reload
 
 Token = open('token.txt').read()
@@ -12,8 +13,9 @@ def runBot():
     loop = asyncio.get_event_loop()
     theClient = bot.BotClient()
     commands = Commands(theClient)
-    levels = UserLevels(theClient)
+    #levels = UserLevels(theClient)
     scrape = Scrape(theClient)
+    saved = SaveLinks(theClient)
     try:
         loop.run_until_complete(theClient.start(Token))
     except KeyboardInterrupt:
