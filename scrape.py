@@ -7,9 +7,45 @@ class Scrape():
     def __init__(self, client):
         self.client = client
         self.theCommands = {
-            'getjson': {'method': self.getJson, 'requiresAuth': True}
+            'getjson': {'method': self.getJson, 'requiresAuth': True},
+            'getPercentage' : {'method': self.getPercentage, 'requiresAuth': False}
         }
         self.client.addCommands(self.theCommands)
+
+    async def getPercentage (self,msg,txt):
+        fullTotal = -1
+        counter = 0
+        theTime = datetime.datetime.today()
+        members = {
+
+        }
+        messageCount = {
+
+        }
+        theBefore = None
+        iterate = True
+        while iterate:
+            async for message in msg.channel.history(before=theBefore, limit=100):
+                if not message.author.id in members:
+                    members[message.author.id] = message.author.display_name
+                    messageCount[message.author.id] = 1
+                else:
+                    messageCount[message.author.id] += 1
+                fullTotal += 1
+                counter += 1
+                if counter == 100:
+                    theBefore = message
+            print(counter)
+            if counter == 100:
+                iterate = True
+                counter = 0
+            else:
+                iterate = False
+        output = f'```Total Messages in {msg.channel.name} - {fullTotal}\n'
+        for key in members:
+            output += f'{members[key]} - {messageCount[key]} messages {round(messageCount[key]/fullTotal*100,1)}%\n'
+        output += "```"
+        await msg.channel.send(output)
 
     async def getJson(self, msg, txt):
         fullTotal = 0
