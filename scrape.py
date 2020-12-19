@@ -13,38 +13,41 @@ class Scrape():
         self.client.addCommands(self.theCommands)
 
     async def getPercentage (self,msg,txt):
-        fullTotal = -1
-        counter = 0
-        theTime = datetime.datetime.today()
-        members = {
+        async with msg.channel.typing():
+            fullTotal = -1
+            counter = 0
+            theTime = datetime.datetime.today()
+            members = {
 
-        }
-        messageCount = {
+            }
+            messageCount = {
 
-        }
-        theBefore = None
-        iterate = True
-        while iterate:
-            async for message in msg.channel.history(before=theBefore, limit=100):
-                if not message.author.id in members:
-                    members[message.author.id] = message.author.display_name
-                    messageCount[message.author.id] = 1
-                else:
-                    messageCount[message.author.id] += 1
-                fullTotal += 1
-                counter += 1
+            }
+            theBefore = None
+            iterate = True
+            while iterate:
+                async for message in msg.channel.history(before=theBefore, limit=100):
+                    if not message.author.id in members:
+                        members[message.author.id] = message.author.display_name
+                        messageCount[message.author.id] = 1
+                    else:
+                        messageCount[message.author.id] += 1
+                    fullTotal += 1
+                    counter += 1
+                    if counter == 100:
+                        theBefore = message
+                print(counter)
                 if counter == 100:
-                    theBefore = message
-            print(counter)
-            if counter == 100:
-                iterate = True
-                counter = 0
-            else:
-                iterate = False
-        output = f'```Total Messages in {msg.channel.name} - {fullTotal}\n'
-        for key in members:
-            output += f'{members[key]} - {messageCount[key]} messages {round(messageCount[key]/fullTotal*100,1)}%\n'
-        output += "```"
+                    iterate = True
+                    counter = 0
+                else:
+                    iterate = False
+            output = f'```Total Messages in {msg.channel.name} - {fullTotal}\n'
+            def by_value(item):
+                return item[1]
+            for key, value in sorted(messageCount.items(), key=by_value, reverse=True):
+                output += f'{members[key]} - {value} messages {round(value/fullTotal*100,1)}%\n'
+            output += "```"
         await msg.channel.send(output)
 
     async def getJson(self, msg, txt):
