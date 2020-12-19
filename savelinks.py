@@ -9,9 +9,16 @@ class SaveLinks():
         self.theCommands = {
             'savedlink': {'method': self.savedLink, 'requiresAuth': False},
             'savelink': {'method': self.saveLink, 'requiresAuth': False},
-            'savedlinks': {'method': self.savedLinks, 'requiresAuth': False}
+            'savedlinks': {'method': self.savedLinks, 'requiresAuth': False},
+            'removelink': {'method': self.removeLink, 'requiresAuth': True}
         }
         self.client.addCommands(self.theCommands)
+
+    async def removeLink(self, msg, txt):
+        txt = txt.split()
+        theLinks = self.client.config['savedLinks']
+        if txt[0] in theLinks:
+            del theLinks[txt[0]]
     
     async def saveLink(self, msg, txt):
         txt = txt.split()
@@ -22,6 +29,8 @@ class SaveLinks():
                 await msg.channel.send(f"Saved link: `{txt[0]}`")
                 try:
                     await self.client.saveConfig()
+                finally:
+                    pass
 
     async def savedLinks(self, msg, txt):
         theLinks = self.client.config['savedLinks']
