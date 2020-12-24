@@ -4,6 +4,7 @@ from scrape import Scrape
 from userlevels import UserLevels
 from commands import Commands
 from savelinks import SaveLinks
+from messages import Messages
 from importlib import reload
 
 Token = open('token.txt').read()
@@ -16,6 +17,7 @@ def runBot():
     #levels = UserLevels(theClient)
     scrape = Scrape(theClient)
     saved = SaveLinks(theClient)
+    messages = Messages(theClient)
     try:
         loop.run_until_complete(theClient.start(Token))
     except KeyboardInterrupt:

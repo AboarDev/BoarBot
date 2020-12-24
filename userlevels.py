@@ -19,7 +19,7 @@ class UserLevels():
     def on_ready(self):
         pass
 
-    def on_message(self,msg):
+    async def on_message(self,msg):
         theId = msg.author.id
         aUser = self.getUser(theId)
         if not aUser and msg.author.bot == False:

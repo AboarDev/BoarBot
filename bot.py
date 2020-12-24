@@ -40,7 +40,7 @@ class BotClient(discord.Client):
                     await message.channel.send('🔒 Must be authed to use command')
         else:
             for handler in self.messageHandlers:
-                handler(message)
+                await handler(message)
 
     async def setStatus(self, newStatus):
         await self.change_presence(activity=discord.Game(newStatus))
