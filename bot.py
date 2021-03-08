@@ -9,6 +9,7 @@ Configfile = 'config/config.json'
 class BotClient(discord.Client):
 
     def __init__(self):
+        """Includes arrays for event handlers"""
         discord.Client.__init__(self)
         self.config = json.loads(open(Configfile).read())
         self.restart = False
@@ -18,6 +19,7 @@ class BotClient(discord.Client):
         self.closers = []
 
     async def on_ready(self):
+        """Will run when bot is connected to discord"""
         print(F'Logged in as\n{self.user.name}, {self.user.id}\n------')
         await self.change_presence(activity=discord.Game(self.config['status']))
         for loader in self.loaders:
@@ -26,6 +28,7 @@ class BotClient(discord.Client):
             self.loadedLevels = True """
 
     async def on_message(self, message):
+        """Will run on message"""
         if message.author.bot == True:
             return
         elif message.content[0:1] == '+':
@@ -46,10 +49,11 @@ class BotClient(discord.Client):
         await self.change_presence(activity=discord.Game(newStatus))
         self.config['status'] = newStatus
 
-    async def saveConfig (self):
+    async def saveConfig(self):
         self.saveFile(self.config, "config", "config")
 
     async def close(self):
+        """Saves config and kills bot"""
         try:
             self.saveFile(self.config, "config", "config")
             # self.saveFile(self.theLevels.outputUsers(),"users","config")
@@ -57,22 +61,25 @@ class BotClient(discord.Client):
             await discord.Client.close(self)
 
     def isAuthed(self, user):
+        """Checks if a user is authed"""
         return user in self.config['authedUsers']
 
     def saveFile(self, content, filename, folder='scraped'):
+        """Converts to json and saves locally"""
         theJson = json.dumps(content, indent=2)
         open(F'{folder}/{filename}.json', 'w').write(theJson)
 
     async def pushFile(self, channel, content):
+        """Converts to json and pushes to discord channel"""
         theJson = json.dumps(content, indent=2)
         theBin = io.BytesIO(theJson.encode('utf8'))
         await channel.send(channel.name, file=discord.File(theBin, filename=f"{channel.name}.json"))
 
     def addCommands(self, commands):
         self.commands.update(commands)
-    
+
     def addLoader(self, loader):
         self.loaders.append(loader)
 
-    def addHandler(self,handler):
+    def addHandler(self, handler):
         self.messageHandlers.append(handler)

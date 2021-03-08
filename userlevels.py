@@ -1,6 +1,7 @@
 import json
 import asyncio
 
+
 class UserLevels():
 
     def __init__(self, client):
@@ -14,12 +15,13 @@ class UserLevels():
         self.client.addLoader(self.on_ready)
         theUsers = json.loads(open("config/users.json").read())
         for user in theUsers:
-            self.users.append(User(user["id"],user["exp"],user["coins"],user["level"],user["expRate"]))
+            self.users.append(
+                User(user["id"], user["exp"], user["coins"], user["level"], user["expRate"]))
 
     def on_ready(self):
         pass
 
-    async def on_message(self,msg):
+    async def on_message(self, msg):
         theId = msg.author.id
         aUser = self.getUser(theId)
         if not aUser and msg.author.bot == False:

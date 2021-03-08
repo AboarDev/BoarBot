@@ -8,11 +8,11 @@ class Scrape():
         self.client = client
         self.theCommands = {
             'getjson': {'method': self.getJson, 'requiresAuth': True},
-            'getPercentage' : {'method': self.getPercentage, 'requiresAuth': False}
+            'getPercentage': {'method': self.getPercentage, 'requiresAuth': False}
         }
         self.client.addCommands(self.theCommands)
 
-    async def getPercentage (self,msg,txt):
+    async def getPercentage(self, msg, txt):
         async with msg.channel.typing():
             fullTotal = -1
             theTime = datetime.datetime.today()
@@ -26,6 +26,7 @@ class Scrape():
                     messageCount[message.author.id] += 1
                 fullTotal += 1
             output = f'```Total Messages in {msg.channel.name} - {fullTotal}\n'
+
             def by_value(item):
                 return item[1]
             for key, value in sorted(messageCount.items(), key=by_value, reverse=True):

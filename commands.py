@@ -20,7 +20,7 @@ class Commands():
             'authuser': {'method': self.authUser, 'requiresAuth': True},
             'deauthuser': {'method': self.deAuthUser, 'requiresAuth': True},
             'massdelete': {'method': self.massDelete, 'requiresAuth': True},
-            
+
             'emojiinfo': {'method': self.emojiInfo, 'requiresAuth': False},
             'listmembers': {'method': self.listMembers, 'requiresAuth': True},
             'repeatemoji': {'method': self.gems, 'requiresAuth': False},
@@ -160,7 +160,6 @@ class Commands():
                 print(txt)
                 toSend = f'Type: Unicode Emoji\nNative Format: `{txt}`'
         await msg.channel.send(toSend)
-
 
     async def massDelete(self, msg, txt):
         await msg.delete()

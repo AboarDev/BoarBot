@@ -6,6 +6,7 @@ import random
 
 Configfile = 'config/templates.json'
 
+
 class Messages():
 
     def __init__(self, client):
@@ -33,13 +34,13 @@ class Messages():
 
     def createMessage(self):
         template = random.choice(self.templates)
-        message = template.replace("P",random.choice(self.P))
-        message = message.replace("A",random.choice(self.A))
-        message = message.replace("X",random.choice(self.X))
-        message = message.replace("T",random.choice(self.T))
+        message = template.replace("P", random.choice(self.P))
+        message = message.replace("A", random.choice(self.A))
+        message = message.replace("X", random.choice(self.X))
+        message = message.replace("T", random.choice(self.T))
         return message
 
-    async def on_message(self,msg):
+    async def on_message(self, msg):
         if self.enabled:
             self.counter += 1
             channel = await self.client.fetch_channel(self.messageChannel)

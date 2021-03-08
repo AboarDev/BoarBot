@@ -19,7 +19,7 @@ class SaveLinks():
         theLinks = self.client.config['savedLinks']
         if txt[0] in theLinks:
             del theLinks[txt[0]]
-    
+
     async def saveLink(self, msg, txt):
         txt = txt.split()
         if len(txt) > 1 and 'http' in txt[1]:
