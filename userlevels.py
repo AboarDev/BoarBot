@@ -1,8 +1,9 @@
 import json
 import asyncio
+import module_base
 
 
-class UserLevels():
+class UserLevels(module_base.module_base):
 
     def __init__(self, client):
         self.users = []

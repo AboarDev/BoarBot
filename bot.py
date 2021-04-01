@@ -17,6 +17,7 @@ class BotClient(discord.Client):
         self.messageHandlers = []
         self.loaders = []
         self.closers = []
+        self.teardown = []
 
     async def on_ready(self):
         """Will run when bot is connected to discord"""
@@ -54,6 +55,8 @@ class BotClient(discord.Client):
 
     async def close(self):
         """Saves config and kills bot"""
+        for teardown in self.teardown:
+            teardown()
         try:
             self.saveFile(self.config, "config", "config")
             # self.saveFile(self.theLevels.outputUsers(),"users","config")
@@ -83,3 +86,6 @@ class BotClient(discord.Client):
 
     def addHandler(self, handler):
         self.messageHandlers.append(handler)
+
+    def addTeardown(self, handler):
+        self.teardown.append(handler)

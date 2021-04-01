@@ -1,9 +1,10 @@
 import datetime
 import asyncio
 import re
+import module_base
 
 
-class Commands():
+class Commands(module_base.module_base):
 
     def __init__(self, client):
         self.client = client

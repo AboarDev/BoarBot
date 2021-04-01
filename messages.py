@@ -3,11 +3,13 @@ import asyncio
 import re
 import json
 import random
+import module_base
+
 
 Configfile = 'config/templates.json'
 
 
-class Messages():
+class Messages(module_base.module_base):
 
     def __init__(self, client):
         self.client = client
