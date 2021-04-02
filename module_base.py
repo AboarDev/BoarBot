@@ -5,7 +5,7 @@ import asyncio
 class module_base(abc.ABC):
 
     @abc.abstractmethod
-    def __init__(self):
+    def __init__(self, client):
         pass
 
     def on_ready(self):

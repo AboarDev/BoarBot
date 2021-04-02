@@ -13,10 +13,10 @@ class Commands(module_base.module_base):
             'help': {'method': self.help, 'requiresAuth': False},
             'listauthedusers': {'method': self.listAuthedUsers, 'requiresAuth': False},
 
-            'send': {'method': self.send, 'requiresAuth': True},
+            #'send': {'method': self.send, 'requiresAuth': True},
             'stop': {'method': self.stop, 'requiresAuth': True},
             'restart': {'method': self.restart, 'requiresAuth': True},
-            'dsend': {'method': self.dSend, 'requiresAuth': True},
+            #'dsend': {'method': self.dSend, 'requiresAuth': True},
             'setstatus': {'method': self.status, 'requiresAuth': True},
             'authuser': {'method': self.authUser, 'requiresAuth': True},
             'deauthuser': {'method': self.deAuthUser, 'requiresAuth': True},
