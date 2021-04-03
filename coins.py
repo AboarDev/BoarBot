@@ -38,16 +38,16 @@ class Coins(module_base.module_base):
         self.client = client
         self.theCommands = {
             "coins": {'method': self.coins, 'requiresAuth': False},
-            "send": {'method': self.send, 'requiresAuth': False},
+            "give": {'method': self.send, 'requiresAuth': False},
             "buy": {'method': self.buy, 'requiresAuth': False},
             "market": {'method': self.market, 'requiresAuth': False},
             "throw": {'method': self.throw, 'requiresAuth': False},
             "items": {'method': self.items, 'requiresAuth': False}
         }
         self.buyable = {
-            "token": Item("Token","Allows use of msg command", 10),
-            "pre-order": Item("Pre-Order","TBA", 5),
-            "egg": Item("Egg","An Egg",1)
+            "Token": Item("Token","Allows use of msg command", 10),
+            "Pre-Order": Item("Pre-Order","TBA", 5),
+            "Egg": Item("Egg","An Egg",1)
         }
         self.client.addLoader(self.on_ready)
         self.client.addHandler(self.on_message)

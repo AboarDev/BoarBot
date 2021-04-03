@@ -245,4 +245,10 @@ class Commands(module_base.module_base):
 +massdelete [number of messages to delete] > deletes multiple messages 🔒\n
 +getjson > [-send to send in chat] gets json of channel 🔒\n
 +repeatemoji > [emoji] [number of times]\n
++coins > number of coins the user has\n
++give [@user] [ammount] > send boarcoins\n
++market > list of all items\n
++buy [item name] > buys item\n
++throw [@user (optional)] > throws egg\n
++items > lists owned items
 ```""")
