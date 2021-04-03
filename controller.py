@@ -1,10 +1,10 @@
 import asyncio
 import bot
-#from scrape import Scrape
+from scrape import Scrape
 #from userlevels import UserLevels
 from commands import Commands
-#from savelinks import SaveLinks
-#from messages import Messages
+from savelinks import SaveLinks
+from messages import Messages
 from importlib import reload
 from coins import Coins
 
@@ -16,9 +16,9 @@ def runBot():
     theClient = bot.BotClient()
     commands = Commands(theClient)
     #levels = UserLevels(theClient)
-    #scrape = Scrape(theClient)
-    #saved = SaveLinks(theClient)
-    #messages = Messages(theClient)
+    scrape = Scrape(theClient)
+    saved = SaveLinks(theClient)
+    messages = Messages(theClient)
     coins = Coins(theClient)
     try:
         loop.run_until_complete(theClient.start(Token))

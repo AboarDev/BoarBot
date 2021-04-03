@@ -134,7 +134,7 @@ class Coins(module_base.module_base):
             user = self.addUser(msg.author.id)
         if "egg" in user.items:
             user.items.remove("egg")
-            if len(msg.mentions > 0):
+            if len(msg.mentions)  > 0:
                 target = msg.mentions[0]
                 await msg.channel.send(f"```Threw Egg at {target.name}#{target.discriminator}```")
             else:
@@ -148,4 +148,6 @@ class Coins(module_base.module_base):
         for item in user.items:
             out += item
             out += '\n'
+        if len(user.items) == 0:
+            out = "No Items"
         await msg.channel.send(f"```{out}```")
